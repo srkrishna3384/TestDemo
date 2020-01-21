@@ -1,0 +1,118 @@
+package step_definitions;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
+import java.util.HashMap;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.WebElement;
+import org.seleniumhq.jetty9.security.authentication.LoginAuthenticator;
+import org.testng.Assert;
+
+import com.relevantcodes.extentreports.LogStatus;
+
+import MoneyControlLocators.LoginLocators;
+import MoneyControlLocators.PortfolioLoginPage;
+import cucumber.api.DataTable;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import utilities.DriverUtil;
+import utilities.ExcelDataUtil;
+import utilities.GlobalUtil;
+import utilities.HTMLReportUtil;
+import utilities.KeywordUtil;
+
+public class SocialMediaAppsAvailability {
+	private static String firstWinHandle = "";
+	public static HashMap<String, String> dataMap = new HashMap<String, String>();
+
+	@Then("^user click on signup page and verify signup page is displayed$")
+	public void user_click_on_signup_page_and_verify_signup_page_is_displayed() {
+		KeywordUtil.click(LoginLocators.SignUpText, "user clicked on signup button");
+		KeywordUtil.switchToFrame("myframe");
+		assertEquals(KeywordUtil.getElementText(PortfolioLoginPage.SignUpText), "SIGN UP",
+				"user verified signup page displayed");
+		MoneyControlRunner.logger.log(LogStatus.PASS,
+				HTMLReportUtil.passStringGreenColor("user verified signup page displayed"));
+
+	}
+
+	@Then("^user verify social media apps are available or not$")
+	public void user_verify_social_media_apps_are_available_or_not() {
+		// String fb= KeywordUtil.getElementText(LoginLocators.LoginWithFBBtn);
+		WebElement ele = GlobalUtil.getDriver().findElement(By.xpath(LoginLocators.LoginWithFBBtn));
+		if (ele.isDisplayed()) {
+			MoneyControlRunner.logger.log(LogStatus.PASS,
+					HTMLReportUtil.passStringGreenColor("User Verified Login With FaceBook App is displayed"));
+		}
+		WebElement ele1 = GlobalUtil.getDriver().findElement(By.xpath(LoginLocators.LoginWithGoogleBtn));
+		if (ele1.isDisplayed()) {
+			MoneyControlRunner.logger.log(LogStatus.PASS,
+					HTMLReportUtil.passStringGreenColor("User verified Login with Google App is displayed"));
+		}
+		WebElement ele2 = GlobalUtil.getDriver().findElement(By.xpath(LoginLocators.SignUpWithEmailBtn));
+		if (ele2.isDisplayed()) {
+			MoneyControlRunner.logger.log(LogStatus.PASS,
+					HTMLReportUtil.passStringGreenColor("User verified Signup with Email is displayed"));
+
+		}
+
+	}
+
+	@Then("^user click on Signup with Emal button and verify first name, last name, email and password shoud be in blue color and verify character limitations$")
+	public void user_click_on_Signup_with_Emal_button_and_verify_first_name_last_name_email_and_password_shoud_be_in_blue_color_and_verify_character_limitations() {
+
+		KeywordUtil.click(LoginLocators.SignUpWithEmail, "user clicked on signup with email button");
+		KeywordUtil.click(LoginLocators.firstName, "user clicked at First Name field");
+
+		WebElement FirstName = GlobalUtil.getDriver().findElement(By.xpath(LoginLocators.FirstNameLabel));
+		String FirstNameColor = FirstName.getCssValue("color");
+
+		if (FirstNameColor.contains("rgba(63, 81, 181, ")) {
+			MoneyControlRunner.logger.log(LogStatus.PASS,
+					HTMLReportUtil.passStringGreenColor("User verified First Name field label color is Blue"));
+		}
+		WebElement FirstNameCharLimit = GlobalUtil.getDriver().findElement(LoginLocators.firstName);
+		Dimension FirstNameCharSize = FirstNameCharLimit.getSize();
+		String typedValue = FirstNameCharLimit.getAttribute("value");
+		int size = typedValue.length();
+		if (size <= 30) {
+			MoneyControlRunner.logger.log(LogStatus.PASS,
+					HTMLReportUtil.passStringGreenColor("Length of first name is : " + size + " characters"));
+		} else {
+			MoneyControlRunner.logger.log(LogStatus.FAIL, HTMLReportUtil.failStringRedColor(
+					"Length of first name is : " + size + " characters and it is greater than 30 characters."));
+		}
+
+		KeywordUtil.click(LoginLocators.lastName, "user clicked at Last Name field");
+		WebElement LastName = GlobalUtil.getDriver().findElement(By.xpath(LoginLocators.lastNameLabel));
+		String LastNameColor = LastName.getCssValue("color");
+
+		if (LastNameColor.contains("rgba(63, 81, 181, ")) {
+			MoneyControlRunner.logger.log(LogStatus.PASS,
+					HTMLReportUtil.passStringGreenColor("User verified Last Name field label color is Blue"));
+		}
+
+		KeywordUtil.click(LoginLocators.email, "user clicked at Email field");
+		WebElement Email = GlobalUtil.getDriver().findElement(By.xpath(LoginLocators.EmailLabel));
+		String EmailColor = Email.getCssValue("color");
+
+		if (EmailColor.contains("rgba(63, 81, 181, ")) {
+			MoneyControlRunner.logger.log(LogStatus.PASS,
+					HTMLReportUtil.passStringGreenColor("User verified Email field label color is Blue "));
+		}
+
+		KeywordUtil.click(LoginLocators.password, "user clicked at password field");
+		WebElement Password = GlobalUtil.getDriver().findElement(By.xpath(LoginLocators.PasswordLabel));
+		String PwdColor = Password.getCssValue("color");
+
+		if (PwdColor.contains("rgba(63, 81, 181, ")) {
+			MoneyControlRunner.logger.log(LogStatus.PASS,
+					HTMLReportUtil.passStringGreenColor("User verified Password field label color is Blue"));
+		}
+		GlobalUtil.getDriver().close();
+	}
+}

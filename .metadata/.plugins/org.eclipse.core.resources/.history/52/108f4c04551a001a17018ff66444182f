@@ -1,0 +1,45 @@
+package locators.web;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class sample {
+
+	public static void main(String[] args) throws IOException {
+		// TODO Auto-generated method stub
+		String filename = "C:\\Users\\navyatha.kallakuri\\Desktop\\Sheet2.csv";
+		BufferedReader br = new BufferedReader(new FileReader(filename));
+		String line;
+		int i=0;
+		ArrayList<String> arrlist = new ArrayList<String>(100); 
+		while ((line = br.readLine()) != null) {
+			// use comma as separator
+			System.out.println(line);
+			String[] cols = line.split(",");
+			try {
+				if(cols[1].isEmpty() || cols[1].equals("") || cols[1]==null) {
+					System.out.println("failed");
+				}
+				else {
+					System.out.println("Coulmn 4= " + cols[1] );
+				}
+
+		        arrlist.add(i,cols[1]); 
+		        
+		        for (String number : arrlist) { 
+		            System.out.println("Number = " + number); 
+		        } 
+		        i++;
+		        System.out.println(i);
+		        
+			} catch (ArrayIndexOutOfBoundsException e) {
+				
+			}
+
+		}
+
+	}
+}

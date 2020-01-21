@@ -1,0 +1,25 @@
+package com.rk.sample;
+
+public class StringDuplicates2 {
+
+	public static void main(String[] args) {
+
+		String str = "chantichantichanti";
+		char[] ch = str.toCharArray();
+
+		for (char c : ch) {
+			int a = 0;
+			for (int i = 0; i < str.length(); i++) {
+				if (ch[i] == c) {
+					a++;
+					
+					if(a>0) {
+						System.out.println(c + " is " + a);
+					}
+				}
+			}
+
+
+		}
+	}
+}

@@ -1,0 +1,68 @@
+package step_definitions;
+
+import static org.testng.Assert.assertEquals;
+
+import java.util.HashMap;
+
+import org.testng.Assert;
+
+import com.relevantcodes.extentreports.LogStatus;
+
+import MoneyControlLocators.PortfolioLoginPage;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import utilities.DriverUtil;
+import utilities.ExcelDataUtil;
+import utilities.GlobalUtil;
+import utilities.HTMLReportUtil;
+import utilities.KeywordUtil;
+
+public class MCSignUpEmail {
+
+	@Then("^user click on signup button and verify signup page displayed$")
+	public void user_click_on_signup_button_and_verify_signup_page_displayed() {
+		KeywordUtil.click(PortfolioLoginPage.SignUpBtn, "user clicked on signup button");
+		KeywordUtil.switchToFrame("myframe");
+		assertEquals(KeywordUtil.getElementText(PortfolioLoginPage.SignUpText), "SIGN UP",
+				"user verified signup page displayed");
+		MoneyControlRunner.logger.log(LogStatus.PASS,
+				HTMLReportUtil.passStringGreenColor("user verified signup page displayed"));
+	}
+
+	@Then("^user click on sign in with email button and verify Sign in with email page displayed$")
+	public void user_click_on_sign_in_with_email_button_and_verify_Sign_in_with_email_page_displayed() {
+		KeywordUtil.click(PortfolioLoginPage.SignUpWithEmail, "user clicked on signup with email button");
+		assertEquals(KeywordUtil.getElementText(PortfolioLoginPage.SignUpText), "SIGN UP",
+				"user verified and ready to enter details");
+		MoneyControlRunner.logger.log(LogStatus.PASS,
+				HTMLReportUtil.passStringGreenColor("user verified and ready to enter details"));
+	}
+
+	@Then("^user enter firstname, lastname,email and password$")
+	public void user_enter_firstname_lastname_email_and_password() throws InterruptedException {
+		KeywordUtil.inputText(PortfolioLoginPage.firstName, GlobalUtil.dataMap.get("Email_FirstName"),
+				"user entered first name");
+		KeywordUtil.inputText(PortfolioLoginPage.lastName, GlobalUtil.dataMap.get("Email_LastName"),
+				"user entered last name");
+		Thread.sleep(2000);
+		KeywordUtil.click(PortfolioLoginPage.email, "selected email text box");
+		KeywordUtil.inputText(PortfolioLoginPage.email, KeywordUtil.generateRandomEmail(), "user entered email id");
+		KeywordUtil.inputText(PortfolioLoginPage.passwordOne, GlobalUtil.dataMap.get("MCPwd"), "user entered password");
+
+	}
+
+	@Then("^user click on singn in with email button and verify MCEmailLogin page displayed$")
+	public void user_click_on_singn_in_with_email_button_and_verify_MCEmailLogin_page_displayed()
+			throws InterruptedException {
+		KeywordUtil.click(PortfolioLoginPage.signIn, "user clicked on signup with email button");
+		assertEquals(KeywordUtil.getElementText(PortfolioLoginPage.SignUpEmailVerification),
+				"Thank you for registering.", "user verified new account is created");
+		MoneyControlRunner.logger.log(LogStatus.PASS,
+				HTMLReportUtil.passStringGreenColor("user verified new account is created page is displayed"));
+		String wn = KeywordUtil.getDriver().getWindowHandle();
+		KeywordUtil.switchToWindow(wn);
+		KeywordUtil.click(PortfolioLoginPage.CloseBtn, "user close the verification window");
+		DriverUtil.closeAllDriver();
+	}
+}

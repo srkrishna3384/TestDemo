@@ -1,0 +1,168 @@
+package step_definitions;
+
+import java.io.File;
+import java.util.Date;
+
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+
+import com.cucumber.listener.ExtentProperties;
+import com.cucumber.listener.Reporter;
+import com.relevantcodes.extentreports.ExtentReports;
+import com.relevantcodes.extentreports.ExtentTest;
+import com.relevantcodes.extentreports.LogStatus;
+
+import cucumber.api.CucumberOptions;
+import cucumber.api.Scenario;
+import cucumber.api.java.After;
+import cucumber.api.java.Before;
+import cucumber.api.testng.AbstractTestNGCucumberTests;
+import utilities.ConfigReader;
+import utilities.ExcelDataUtil;
+import utilities.GlobalUtil;
+import utilities.HTMLReportUtil;
+import utilities.KeywordUtil;
+import utilities.LogUtil;
+
+
+@CucumberOptions(features = "classpath:features", plugin = { "pretty", "html:target/cucumber-html-report",
+		"json:target/cucumber.json",
+		"com.cucumber.listener.ExtentCucumberFormatter:target/cucumber-html-report/index.html" }, 
+  tags = { "@LoginWithFB" }, monochrome = true)
+public class MoneyControlRunner extends AbstractTestNGCucumberTests {
+
+	static ExtentReports extent;
+	public static ExtentTest logger;
+	String imagePath;
+	String pathForLogger;
+	String testCaseDescription;
+	public Scenario scenario;
+
+	
+	@Before
+	public void beforeMethod(Scenario scenario) {
+		//this.scenario = scenario;
+		
+		if (scenario.getName().contains("_"))
+			testCaseDescription = scenario.getName().split("_")[1];
+		else
+			testCaseDescription = scenario.getName();
+		System.out.println("CURRENTLY EXECUTING TC IS: " +testCaseDescription);
+		MoneyControlRunner.logger = MoneyControlRunner.extent.startTest(testCaseDescription);
+		LogUtil.infoLog(getClass(),
+				"\n+----------------------------------------------------------------------------------------------------------------------------+");
+		LogUtil.infoLog(getClass(), "Test Started: " + scenario.getName());
+
+		LogUtil.infoLog("Test Environment",
+				"Test is executed in Environment: " + GlobalUtil.getCommonSettings().getExecutionEnv());
+
+		LogUtil.infoLog("TestStarted", "Test is started with browser: " + GlobalUtil.getCommonSettings().getBrowser());
+		String testCaseDescription = scenario.getName().contains("_") ? scenario.getName().split("_")[1]
+				: scenario.getName();
+		ExtentProperties extentProperties = ExtentProperties.INSTANCE;
+		Object tags[] = scenario.getSourceTagNames().toArray();
+		String tagName = null;
+		for (int i = 0; i < tags.length; i++)
+			tagName = tagName + tags[i].toString().replace("@", "_");
+		tagName = tagName.replace("null_", "");
+		String path = "output/ExecutionReport.html";
+		//String path = "output"+"/"+testCaseDescription+".html";
+		extentProperties.setReportPath(path);
+	}
+
+	@After
+	public void afterMethod(Scenario scenario) {
+		String testName = scenario.getName().split("_")[0].trim();
+		if (scenario.isFailed()) {
+			try {
+				String scFileName = "ScreenShot_" + System.currentTimeMillis();
+				String screenshotFilePath = ConfigReader.getValue("screenshotPath") + "/" + scFileName + ".png";
+
+				imagePath = HTMLReportUtil.testFailTakeScreenshot(screenshotFilePath);
+				pathForLogger = MoneyControlRunner.logger.addScreenCapture(imagePath);
+				MoneyControlRunner.logger.log(LogStatus.FAIL,
+						HTMLReportUtil.failStringRedColor("Failed at point: " + pathForLogger));
+
+				scenario.write("Current Page URL is " + GlobalUtil.getDriver().getCurrentUrl());
+
+				byte[] screenshot = KeywordUtil.takeScreenshot(screenshotFilePath);
+				scenario.embed(screenshot, "image/png");
+				
+				Reporter.addScreenCaptureFromPath(imagePath);
+			
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			
+
+			LogUtil.infoLog("TestEnded",
+					"Test has ended closing browser: " + GlobalUtil.getCommonSettings().getBrowser());
+			
+
+		}
+
+		MoneyControlRunner.extent.endTest(MoneyControlRunner.logger);
+
+	//	GlobalUtil.getDriver().quit();
+
+
+	}
+	@BeforeClass
+	public void onStart() {
+		try {
+
+			extent = new ExtentReports(System.getProperty("user.dir") + ConfigReader.getValue("extentReportPath"));
+			extent.loadConfig(new File(System.getProperty("user.dir") + ConfigReader.getValue("extentConfigPath")));
+			// Get all the common setting from excel file that are required for
+			GlobalUtil.setCommonSettings(ExcelDataUtil.getCommonSettings());
+
+			String browser = "";
+			browser = GlobalUtil.getCommonSettings().getBrowser();
+			String executionEnv = "";
+			executionEnv = GlobalUtil.getCommonSettings().getExecutionEnv();
+
+			String url = "";
+			url = GlobalUtil.getCommonSettings().getUrl();
+
+			if (browser == null) {
+				browser = ConfigReader.getValue("defaultBrowser");
+			}
+
+			if (executionEnv == null) {
+				executionEnv = ConfigReader.getValue("defaultExecutionEnvironment");
+			}
+
+			if (url == null) {
+				url = ConfigReader.getValue("BASE_URL");
+				GlobalUtil.getCommonSettings().setUrl(url);
+			}
+			LogUtil.infoLog(getClass(),
+					"\n\n+===========================================================================================================+");
+			LogUtil.infoLog(getClass(), " Suite started" + " at " + new Date());
+			LogUtil.infoLog(getClass(), "Suite Execution For Web application on environment : " + executionEnv);
+			LogUtil.infoLog(getClass(), "Suite Execution For Android mobile application on version: "
+					+ GlobalUtil.getCommonSettings().getAndroidVersion());
+			LogUtil.infoLog(getClass(),
+					"Suite Execution For RestAPI on URL: " + GlobalUtil.getCommonSettings().getRestURL());
+			LogUtil.infoLog(getClass(),
+					"\n\n+===========================================================================================================+");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			LogUtil.errorLog(getClass(), "Common Settings not properly set may not run the scripts properly");
+		}
+	}
+
+	@AfterClass
+	public void onFinish() {
+		LogUtil.infoLog(getClass(), " suite finished" + " at " + new Date());
+		LogUtil.infoLog(getClass(),
+				"\n\n+===========================================================================================================+");
+		extent.flush();
+//		DriverUtil.closeAllDriver();
+//		GlobalUtil.getDriver().quit();
+	}
+
+}

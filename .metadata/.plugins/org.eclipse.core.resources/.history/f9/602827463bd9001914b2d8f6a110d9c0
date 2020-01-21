@@ -1,0 +1,167 @@
+package step_definitions;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+
+import com.relevantcodes.extentreports.LogStatus;
+
+import MoneyControlLocators.PortfolioLoginPage;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import utilities.GlobalUtil;
+import utilities.HTMLReportUtil;
+import utilities.KeywordUtil;
+
+public class UpdateStocks {
+	@When("^user login to Moneycontrol page using version three credentials$")
+	public void user_login_to_Moneycontrol_page_using_version_credentials() {
+		CreateNewPortfolioAddStock cNPAS = new CreateNewPortfolioAddStock();
+		cNPAS.portfolioBtn();
+		cNPAS.verifyLoginPortfolioPage();
+		cNPAS.versionThreeLogin();
+		cNPAS.versionThree();
+	}
+
+	@Then("^user click on \"([^\"]*)\" in 'Stocks' link and updated their values$")
+	public void user_click_on_and_updated_their_values(String arg1) {
+		KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.stocksLnk);
+		KeywordUtil.click(PortfolioLoginPage.stocksLnk, "User clicked on 'Stocks' link");
+		List<WebElement> cMPNYNamesList = GlobalUtil.getDriver().findElements((PortfolioLoginPage.cMPNYNames));
+		for (int i = 0; i < cMPNYNamesList.size(); i++) {
+			if (cMPNYNamesList.get(i).getText().contains("BHEL")) {
+				cMPNYNamesList.get(i).click();
+			}
+		}
+		KeywordUtil.delay(2000);
+
+		if (arg1.equals("Edit")) {
+			KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.editBtn);
+			KeywordUtil.click(PortfolioLoginPage.editBtn, "User clicked on 'Edit' button");
+			KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.avgPrice);
+			String avgPrice = GlobalUtil.getDriver().findElement(PortfolioLoginPage.avgPrice).getAttribute("value");
+			System.out.println("Average Price is :" + avgPrice);
+
+			if (avgPrice.contains("300")) {
+				GlobalUtil.getDriver().findElement(PortfolioLoginPage.avgPrice).clear();
+				GlobalUtil.getDriver().findElement(PortfolioLoginPage.avgPrice).sendKeys("200");
+				KeywordUtil.delay(2000);
+				KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.saveChangesBtn);
+				KeywordUtil.click(PortfolioLoginPage.saveChangesBtn, "user clicked on 'SAVE CHANGES' button");
+				KeywordUtil.delay(1000);
+				Alert alert = GlobalUtil.getDriver().switchTo().alert();
+				alert.accept();
+				GlobalUtil.getDriver().navigate().refresh();
+				KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.cMPNYNames);
+				cMPNYNamesList = GlobalUtil.getDriver().findElements((PortfolioLoginPage.cMPNYNames));
+				for (int i = 0; i < cMPNYNamesList.size(); i++) {
+					if (cMPNYNamesList.get(i).getText().contains("BHEL")) {
+						cMPNYNamesList.get(i).click();
+					}
+				}
+
+				KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.editBtn);
+				KeywordUtil.click(PortfolioLoginPage.editBtn, "User clicked on 'Edit' button");
+				// ele.click();
+				KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.avgPrice);
+				avgPrice = GlobalUtil.getDriver().findElement(PortfolioLoginPage.avgPrice).getAttribute("value");
+				System.out.println("Average Price is :" + avgPrice);
+				System.out.println(avgPrice.contains("200") ? "MutualFund is updated" : "MutualFund is not updated");
+				MoneyControlRunner.logger.log(LogStatus.PASS, "user validated that updated price is displayed or not");
+			} else {
+				GlobalUtil.getDriver().findElement(PortfolioLoginPage.avgPrice).clear();
+				GlobalUtil.getDriver().findElement(PortfolioLoginPage.avgPrice).sendKeys("300");
+				KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.saveChangesBtn);
+				KeywordUtil.click(PortfolioLoginPage.saveChangesBtn, "user clicked on 'SAVE CHANGES' button");
+				KeywordUtil.delay(1000);
+				Alert alert = GlobalUtil.getDriver().switchTo().alert();
+				alert.accept();
+				KeywordUtil.delay(4000);
+				GlobalUtil.getDriver().navigate().refresh();
+				cMPNYNamesList = GlobalUtil.getDriver().findElements((PortfolioLoginPage.cMPNYNames));
+				KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.cMPNYNames);
+				for (int i = 0; i < cMPNYNamesList.size(); i++) {
+					if (cMPNYNamesList.get(i).getText().contains("BHEL")) {
+						cMPNYNamesList.get(i).click();
+					}
+				}
+
+				KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.editBtn);
+				KeywordUtil.click(PortfolioLoginPage.editBtn, "User clicked on 'Edit' button");
+				KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.avgPrice);
+				avgPrice = GlobalUtil.getDriver().findElement(PortfolioLoginPage.avgPrice).getAttribute("value");
+				System.out.println("Average Price is :" + avgPrice);
+				System.out.println(avgPrice.contains("300") ? "MutualFund is updated" : "MutualFund is not updated");
+				MoneyControlRunner.logger.log(LogStatus.PASS,
+						HTMLReportUtil.passStringGreenColor("user validated that updated price is displayed or not"));
+			}
+		} else if (arg1.equals("Sell")) {
+			KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.sellBtn);
+			KeywordUtil.click(PortfolioLoginPage.sellBtn, "user clicked on 'Sell' button");
+			KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.avgPrice);
+			KeywordUtil.inputText(PortfolioLoginPage.avgPrice, "100", "user entered sell price");
+			KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.calanderIcon);
+			KeywordUtil.click(PortfolioLoginPage.calanderIcon, "user clicked on calander icon");
+
+			Date d = new Date();
+			int curDate = d.getDate();
+			String date = Integer.toString(curDate);
+			System.out.println(curDate);
+			List<WebElement> cell = GlobalUtil.getDriver().findElements(By.xpath("//div[@id='calendarDiv']//tr/td"));
+			// GlobalUtil.getDriver().findElements(By.xpath("//div[@id='calendarDiv']//tr"));
+			int n = 0;
+			for (WebElement ele : cell) {
+				System.out.println(n++);
+				System.out.println(ele.getText());
+				if (ele.getText().contains(date)) {
+					ele.click();
+					break;
+				}
+			}
+			KeywordUtil.delay(2000);
+			KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.saveChangesBtn);
+			KeywordUtil.click(PortfolioLoginPage.saveChangesBtn, "user clicked on 'SAVE CHANGES' button");
+			KeywordUtil.delay(2000);
+			Alert alert = GlobalUtil.getDriver().switchTo().alert();
+			alert.accept();
+			MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.passStringGreenColor("user sell the stock"));
+		} else if (arg1.equals("Delete")) {
+			KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.deleteChkBx);
+			KeywordUtil.click(PortfolioLoginPage.deleteChkBx, "user click on delete checkbox");
+			KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.deleteBtn);
+			KeywordUtil.click(PortfolioLoginPage.deleteBtn, "user click on delete checkbox");
+			Alert alert = GlobalUtil.getDriver().switchTo().alert();
+			alert.accept();
+
+		}
+
+	}
+
+	@Then("^user click on 'add' link, click on 'Reset' button and validate stocks are reseted or not$")
+	public void resetStocks() {
+		KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.stocksParticulars);
+		KeywordUtil.hoverOnElement(PortfolioLoginPage.stocksParticulars, "user clicked on 'stocks' particulars");
+		/*WebElement ele = GlobalUtil.getDriver().findElement(PortfolioLoginPage.stocksParticulars);
+		Actions action = new Actions(GlobalUtil.getDriver());
+		action.moveToElement(ele).click().build().perform();*/
+
+		// KeywordUtil.clickJS(PortfolioLoginPage.stocksParticulars, "user clicked on
+		// 'stocks' button");
+		KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.addBtn);
+		
+		KeywordUtil.hoverOnElement(PortfolioLoginPage.addBtn, "user clicked on 'Add' button");
+		/*WebElement ele1 = GlobalUtil.getDriver().findElement(PortfolioLoginPage.addBtn);
+		action.moveToElement(ele1).click().build().perform();*/
+		KeywordUtil.switchToNewWindow();
+		KeywordUtil.waitForPresent60Sec(PortfolioLoginPage.resetBtn);
+		KeywordUtil.click(PortfolioLoginPage.resetBtn, "user clicked on 'Reset' button");
+	}
+
+}

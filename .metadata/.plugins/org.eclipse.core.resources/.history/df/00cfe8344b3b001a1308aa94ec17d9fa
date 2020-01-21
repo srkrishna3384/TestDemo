@@ -1,0 +1,104 @@
+Feature: Validate navigations in Hindi MoneyControl page
+     
+      @HeaderNavigationHindi  	@Sanity
+
+  Scenario Outline: Verify Header sections are navigating to respected pages upon clicking on each sections in Hindi Website
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    When user switches to Hindi language
+    Then verify when user click on Header section and its navigated to corresponding pages
+
+    Examples: 
+      | TestData     | TestData1 |
+      | MoneyControl | BasicUrl |
+      
+      
+
+            @HindiSamacharNavigation  	@Sanity
+
+  Scenario Outline: Verify whether News is navigating to respective pages upon clicking on each item
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    When user switches to Hindi language
+    When user click on "Samachar" Tab
+    Then Verify whether News is navigating to respective pages upon clicking on each item
+
+    Examples: 
+      | TestData     | TestData1 |
+      | MoneyControl | BasicUrl |
+      
+      
+
+#        @VerifyBharath   
+
+  Scenario Outline: Verify by default 'Bharath' highlights in blue colour
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    When user switches to Hindi language
+    When user click on "Samachar" Tab
+    Then Verify 'Bharath' highlights in blue colour in Market Action chart
+
+    Examples: 
+      | TestData     | TestData1|
+      | MoneyControl | BasicUrl |
+      
+
+       @VerifyGraphinMarketAction	@Sanity
+
+  Scenario Outline: Verify display of graph upon clicking on plus button in Market Action
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    When user switches to Hindi language
+    When user click on "Samachar" Tab
+    Then Verify display of graph upon clicking on plus button in Market Action
+
+    Examples: 
+      | TestData     | TestData1 |
+      | MoneyControl | BasicUrl |
+      
+
+             @VerifyListOfTopShows 
+  Scenario Outline: Verify list of Top shows are listed by clicking on CNBC Channels
+
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    When user switches to Hindi language
+    When user click on "MeraTV" Tab
+    Then Verify list of Top shows are listed by clicking on CNBC channels
+
+
+
+    Examples: 
+      | TestData     | TestData1 |
+      | MoneyControl | BasicUrl |
+      
+
+           @HindiComapanyLinksNavigation 
+
+  Scenario Outline: Verify whether clicking on each link under Company is navigating to respective pages
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    When user switches to Hindi language
+    When user click on "Samachar" Tab
+    Then Verify whether clicking on each link under Company is navigating to respective pages
+
+    Examples: 
+      | TestData     | TestData1 |
+      | MoneyControl | BasicUrl |
+
+      
+   @VerifyListOfLiveTVLinks   @Sanity1
+  Scenario Outline: Verify whether user is able to see all the Listed program below Live Tv  
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    When user switches to Hindi language
+    When user click on "MeraTV" Tab
+    Then Verify whether user is able to see all the Listed program below Live Tv
+
+    Examples: 
+      | TestData     | TestData1 |
+      | MoneyControl | BasicUrl |
+      
+
+      
+

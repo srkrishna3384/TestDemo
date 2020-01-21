@@ -1,0 +1,104 @@
+package step_definitions;
+
+import static org.testng.Assert.assertEquals;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+
+import com.relevantcodes.extentreports.LogStatus;
+
+import MoneyControlLocators.MoneyControlShares;
+import MoneyControlLocators.MutualFunds;
+import cucumber.api.java.en.And;
+import cucumber.api.java.en.Then;
+import utilities.GlobalUtil;
+import utilities.HTMLReportUtil;
+import utilities.KeywordUtil;
+
+public class MF_SipCorner {
+	@And("^user login to portfolio and click on 'Home' button$")
+	public void loginPortfolio() {
+
+		CreateNewPortfolioAddStock cNPAS = new CreateNewPortfolioAddStock();
+		cNPAS.portfolioBtn();
+		cNPAS.verifyLoginPortfolioPage();
+		cNPAS.UserNameAndPwd();
+		//KeywordUtil.waitForPresent60Sec(MutualFunds.homeBtn);
+		KeywordUtil.clickJS(MutualFunds.homeBtn, "Clicked on 'Home' button");
+	}
+
+	@Then("^user get the values from 'MUTUAL FUND - SIP CORNER' and validate values with their related websites$")
+	public void getAndValidateValuesFromSipCorner() {
+		String parentWindow = GlobalUtil.getDriver().getWindowHandle();
+		String todaysTheme = GlobalUtil.getDriver().findElement(MutualFunds.mFSipCorner).getText();
+		System.out.println(todaysTheme);
+		MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.passStringGreenColor(todaysTheme));
+		String secondSipCorner = KeywordUtil.getElementText(MutualFunds.secondSipCorner);
+		KeywordUtil.delay(1000);
+		System.out.println("SIP CORNER name is :" + secondSipCorner);
+		KeywordUtil.click(MutualFunds.secondSipCorner, "user clicked on " + secondSipCorner);
+		// sipCornerName.click();
+		KeywordUtil.switchToNewWindow();
+		KeywordUtil.delay(2000);
+		String pageTitle = GlobalUtil.getDriver().getTitle();
+		System.out.println("Navigated to :" + pageTitle);
+		assertEquals(KeywordUtil.getElementText(MutualFunds.mutualFundsHomeBtn), "Mutual Funds home",
+				"user verified page is navigated to " + pageTitle);
+		MoneyControlRunner.logger.log(LogStatus.PASS,
+				HTMLReportUtil.passStringGreenColor("user verified page is navigated to :" + pageTitle));
+		String valueFromDSPMutualFundPage = KeywordUtil.getElementText(MutualFunds.valueFromDSPMutualFundPage);
+		System.out.println("Nav value from DSP mutual fund page is :" + valueFromDSPMutualFundPage);
+		MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil
+				.passStringGreenColor("NAV value from DSP Mutual Fund page is :" + valueFromDSPMutualFundPage));
+		KeywordUtil.delay(2000);
+
+		// KeywordUtil.waitForPresent60Sec(By.xpath("//div[@class='slidmsip2']//li"));
+
+		String nAVAfterSplit = KeywordUtil
+				.getElementText(By.xpath("//tbody[@id='navDataContainer']//td[1]//span[@class='positive']"))
+				.split("\\(")[0];
+		System.out.println("NAV up and down value from DSP mutual fund page :" + nAVAfterSplit);
+		MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil
+				.passStringGreenColor("NAV up and down value from DSP mutual fund page is :" + nAVAfterSplit));
+		String nAVAfterSplitOne = KeywordUtil
+				.getElementText(By.xpath("//tbody[@id='navDataContainer']//td[1]//span[@class='positive']"))
+				.split("\\(")[1];
+		// System.out.println("Before substring NAV up and down value from DSP mutual
+		// fund page is :"+nAVAfterSplitOne);
+		nAVAfterSplitOne = nAVAfterSplitOne.substring(1, nAVAfterSplitOne.length() - 1);
+		System.out.println("NAV percentage value from DSP mutual fund page is :" + nAVAfterSplitOne);
+		MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil
+				.passStringGreenColor("NAV percentage value from DSP mutual fund page is :" + nAVAfterSplitOne));
+		KeywordUtil.switchToWindow(parentWindow);
+
+		String thirdSipCorner = KeywordUtil.getElementText(MutualFunds.thirdSipCorner);
+		System.out.println("SIP CORNER name is :" + thirdSipCorner);
+		MoneyControlRunner.logger.log(LogStatus.PASS,
+				HTMLReportUtil.passStringGreenColor("SIP CORNER Name is :" + thirdSipCorner));
+		KeywordUtil.switchToWindow(parentWindow);
+
+		KeywordUtil.inputText(MoneyControlShares.MCInput, thirdSipCorner, "user search data with " + thirdSipCorner);
+		KeywordUtil.delay(1000);
+		KeywordUtil.waitForPresent60Sec(MutualFunds.autoSuggestMF);
+		KeywordUtil.click(MutualFunds.autoSuggestMF, "user clicked on 'Mutual Fund' from auto suggested list");
+		KeywordUtil.delay(1000);
+		KeywordUtil.waitForPresent60Sec(MutualFunds.selectFromList);
+		KeywordUtil.click(MutualFunds.selectFromList, "user clicked on first one on suggested list");
+		KeywordUtil.delay(3000);
+		String mCNavValue = KeywordUtil.getElementText(MutualFunds.mCNavValue);
+		System.out.println("Money Control NAV value is :" + mCNavValue);
+		MoneyControlRunner.logger.log(LogStatus.PASS,
+				HTMLReportUtil.passStringGreenColor("Money Control NAV value is :" + mCNavValue));
+		String mCNavPrcntgValue = KeywordUtil.getElementText(MutualFunds.mCNavPrcntgValue);
+		System.out.println("Money Control NAV percentage Value is :" + mCNavPrcntgValue);
+		MoneyControlRunner.logger.log(LogStatus.PASS,
+				HTMLReportUtil.passStringGreenColor("Money Control NAV percentage Value is :" + mCNavPrcntgValue));
+
+	}
+
+}

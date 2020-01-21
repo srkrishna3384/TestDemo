@@ -1,0 +1,146 @@
+package step_definitions;
+
+import static org.testng.Assert.assertEquals;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.testng.Assert;
+
+import com.relevantcodes.extentreports.LogStatus;
+
+import MoneyControlLocators.PortfolioLoginPage;
+import MoneyControlLocators.ProUserLoginLocators;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import utilities.DriverUtil;
+import utilities.ExcelDataUtil;
+import utilities.GlobalUtil;
+import utilities.HTMLReportUtil;
+import utilities.KeywordUtil;
+
+public class ProUserLogin {
+	private static String firstWinHandle = "";
+	public static HashMap<String, String> dataMap = new HashMap<String, String>();
+/*	@Given("^ProUser Read the data  \"([^\"]*)\" from Excel file$")
+	//@Given("^Read the test data  \"([^\"]*)\" from Excel file$")
+	public void prouser_Read_the_data_from_Excel_file(String arg1)  {
+		try {
+			KeywordUtil.cucumberTagName = "Web";
+			dataMap = ExcelDataUtil.getTestDataWithTestCaseID("MoneyControl", arg1);
+		} catch (Throwable e) {
+			GlobalUtil.e = e;
+			GlobalUtil.ErrorMsg = e.getMessage();
+			Assert.fail(e.getMessage());
+		}
+
+	}*/
+
+/*	@When("^user Navigate MoneyControlApplication PageOne$")
+	public void user_Navigate_MoneyControlApplication_PageOne()  {
+		try{
+			GlobalUtil.setDriver(DriverUtil.getBrowser(GlobalUtil.getCommonSettings().getExecutionEnv(), GlobalUtil.getCommonSettings().getBrowser()));
+			KeywordUtil.navigateToUrl(dataMap.get("URL"));
+			KeywordUtil.waitForPageToLoad();
+			firstWinHandle = GlobalUtil.getDriver().getWindowHandle();
+		} 
+		catch(Throwable e){
+			GlobalUtil.e = e;
+			GlobalUtil.ErrorMsg = e.getMessage();
+			Assert.fail(e.getMessage());
+		}
+
+	}*/
+
+	/*@Then("^user click on Be a Pro button$")
+	public void click_on_Be_a_Pro_button()  {
+		KeywordUtil.click(ProUserLoginLocators.BeAProButton, "user clicked on Be A Pro button");
+	}
+
+	@Then("^user Navigate to Money control ProUser page and verify navigate to Pro user moneycontrol page displayed$")
+	public void user_Navigate_to_Money_control_ProUser_page() throws Throwable {
+		KeywordUtil.navigateToUrl(dataMap.get("MCProURL"));
+		assertEquals(KeywordUtil.getElementText(ProUserLoginLocators.BeAProPageDisplay), "Moneycontrol Pro", 
+				"user verified Be pro user page is displayed");
+
+	}*/
+
+/*	@When("^user click on Login Button and verify Login page is displayed$")
+	public void user_click_on_Login_Button_and_verify_Login_page_is_displayed()  {
+		try {
+			KeywordUtil.click(ProUserLoginLocators.Login, "click on login button");
+			KeywordUtil.switchToFrame("myframe");
+			assertEquals(KeywordUtil.getElementText(ProUserLoginLocators.LoginDisplay), "LOGIN",
+					"user verified gmail login page displayed");
+			MoneyControlRunner.logger.log(LogStatus.PASS,
+					HTMLReportUtil.passStringGreenColor("user verified login page displayed"));
+		} catch (Throwable e) {
+			GlobalUtil.e = e;
+			GlobalUtil.ErrorMsg = e.getMessage();
+			Assert.fail(e.getMessage());
+		}
+
+	}*/
+
+/*	@When("^user enter pro user id and password$")
+	public void user_enter_pro_user_id_and_password()  {
+
+		KeywordUtil.inputText(ProUserLoginLocators.UserName, dataMap.get("MCProUserId"), "user entered pro user id");
+		KeywordUtil.inputText(ProUserLoginLocators.UserPassword, dataMap.get("MCProUserPwd"), "user entered pro user password");
+		KeywordUtil.click(ProUserLoginLocators.LoginBtn, "user clicked on login button");
+
+	}*/
+/*	@When("^user Click on News button$")
+	public void user_click_on_News_button() {
+		KeywordUtil.click(ProUserLoginLocators.NewsBtn, "User clicked on News Button");
+	}
+*/
+
+/*	@When("^User click a link at OPINION tab and verify that Pro users are able to see exclusive Moneycontrol Pro content fully$")
+	public void proContent() throws InterruptedException  {
+			KeywordUtil.click(ProUserLoginLocators.LoginBtn, "user clicked on login button");
+		assertEquals(KeywordUtil.getElementText(ProUserLoginLocators.ProUserPageDisplay), "Hi mclive..", 
+				"user verified Pro user page is displayed");
+		MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.passStringGreenColor
+				("user verified users are able to see exclusive Moneycontrol Pro content fully"));
+		KeywordUtil.scrollDown(0, 250);
+		List<WebElement> Elementlist = GlobalUtil.getDriver()
+				.findElements(By.xpath(ProUserLoginLocators.OpinionTable));
+		System.out.println("Total elements are : " + Elementlist.size());
+
+		//int count = 0;
+		// String temp = null;
+		for (int i = 0; i < Elementlist.size(); i++) {
+			KeywordUtil.waitForClickable(ProUserLoginLocators.dynamicOpinionPaginations(i + 1));
+			KeywordUtil.click(ProUserLoginLocators.dynamicOpinionPaginations(i + 1),
+					"Clicked on Opinion pagination button " + i + " to verify whether it is a pro contnet or not.");
+			Thread.sleep(2000);
+			GlobalUtil.getDriver()
+			.findElement(By.xpath("//div[@class='owl-item'][" + (i + 1) + "]//a[@class='blog-title']")).click();
+			KeywordUtil.waitForPageToLoad();
+			if(KeywordUtil.isWebElementPresent(ProUserLoginLocators.NonProContent, "it is a non pro user account")) {
+				MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.passStringGreenColor("It is a non pro user account"));
+			}
+			else {
+				MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.passStringGreenColor("User verified that pro users are able to see fully content"));
+			}
+			GlobalUtil.getDriver().navigate().back();
+			KeywordUtil.waitForPageToLoad();
+			Thread.sleep(4000);
+		}
+	}*/
+
+/*
+@Then("^user click on money control pro logout page$")
+public void user_click_on_money_control_pro_logout_page() {
+	KeywordUtil.click(PortfolioLoginPage.GmailLogout, "user cliked on logout button");
+	DriverUtil.closeAllDriver();
+
+}*/
+
+
+}

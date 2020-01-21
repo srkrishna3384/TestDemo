@@ -1,0 +1,173 @@
+Feature: Verify the 'MutualFunds' Tab functionality
+
+
+  @ETF's  
+  Scenario Outline: Performance of ETF's
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    And user click on 'Mutual Funds' and then click on 'ETF's'
+    Then Get the values from ETF's
+
+    Examples: 
+      | TestData    | TestData1 |
+      | MarketsPage | ETF's     |
+
+  @TopRankedFunds  
+  Scenario Outline: Top Ranked Funds
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    And user click on 'Mutual Funds' and then click on 'Top Ranked Funds'
+    And user click on 'Filter items' then select a Rank and click on 'Returns'
+    Then user get the values of 'Scheme Name' and 'Crisil Rank' from 'Historic Returns'
+
+    Examples: 
+      | TestData    | TestData1 |
+      | MarketsPage | ETF's     |
+      
+       @PersonalFinance  
+  Scenario Outline: Verify user is able to navigate to respective pages upon clicking on any link in the Personal Finance Home page
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    And user click on 'Personal Finance'
+    Then Verify user is able to navigate to respective pages upon clicking on any link in the Personal Finance Home page.
+
+    Examples: 
+      | TestData    | TestData1 |
+      | MarketsPage | ETF's     |
+
+  @MyPortfolio  
+  Scenario Outline: MyPortfolio
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    And user click on portfolio button and verify create new account page displayed
+    When user click on login to portfolio button and verify Login page displayed
+    And user enter user name and password and click on login button
+    Then User adds transactions to "Mutual Funds" and validate get their crisil rank from 'MyFortfolio'
+
+    Examples: 
+      | TestData    | TestData1      |
+      | MarketsPage | MF_MyFortfolio |
+
+  @Forum  	 @Sanity
+  Scenario Outline: Update profile from 'Forum' link
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+       When user click on Login Button and verify login page is displayed
+    And user enter pro user id and password and click on Login
+    Then user update the profile while clicking on 'Forum' link
+
+    Examples: 
+      | TestData     | TestData1               |
+      | MoneyControl | LoginWithEmailTestData |
+     
+      
+      @ForumInvalidPost  	 @Sanity
+  Scenario Outline: Verify the appropriate error messages for all invalid entries
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    Then Verify the appropriate error messages for all invalid entries
+
+    Examples: 
+      | TestData     | 		TestData1 		|
+      | MoneyControl | ForumInvalidTestData |
+      
+  @ForumPostWithoutSelectingTopic  	@Sanity
+  Scenario Outline: Verify user trying to post a message without selecting a Topic or entering as message when nickname is set
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    When user click on Login Button and verify login page is displayed
+    And user enter user id and password and click on Login
+    Then Verify user trying to post a message without selecting a Topic or entering as message
+    And user click on money control Logout page
+
+    Examples: 
+      | TestData     | 			TestData1 		|
+      | MoneyControl | ForumPostInvalidTestData|
+      
+     
+      
+        @ForumLinks 	@Sanity
+  Scenario Outline: Verify whether user is able to navigate to respective pages upon clicking on any link in the Forum home page
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+  And user clicked on Forum link
+    Then Verify whether user is able to navigate to respective pages upon clicking on any link in the Forum home page
+    Examples: 
+      | TestData     | TestData1               |
+      | MoneyControl | LoginWithGoogleTestData |
+
+  @Video  
+  Scenario Outline: Videos On Demand
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    And user login to Moneycontrol page using email
+    Then user clicked on 'Video' link and verify top five videos are played or not
+
+    Examples: 
+      | TestData     | TestData1              |
+      | MoneyControl | LoginWithEmailTestData |
+
+
+  @UpdateStocks  	@Sanity
+  Scenario Outline: Update stocks in version3
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    And user login to Moneycontrol page using version three credentials
+    Then user click on "Edit" in 'Stocks' link and updated their values
+    Then user click on "Sell" in 'Stocks' link and updated their values
+    Then user click on "Delete" in 'Stocks' link and updated their values
+     Then user click on money control pro Logout page
+
+    Examples: 
+      | TestData     |                TestData1                 |
+      | MoneyControl | PortFolioAddEditSellDeleteStockTestData |
+      
+  @ResetStocks 
+  Scenario Outline: Reset stocks in version4
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    And user click on portfolio button and verify create new account page displayed
+    When user click on login to portfolio button and verify Login page displayed
+    And user enter user name and password and click on login button
+    Then user click on 'add' link, click on 'Reset' button and validate stocks are reseted or not
+
+    Examples: 
+      | TestData     | TestData1              |
+      | MoneyControl | LoginWithEmailTestData |
+
+#  @ForgotPassword
+  Scenario Outline: Forgot password
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    Then user click on Login button and verify MCLogin page displayed
+    And user click on 'Forgot Password' and entered email
+
+    Examples: 
+      | TestData     | TestData1               |
+      | MoneyControl | LoginWithGoogleTestData |
+      
+        @MutualFundHeaderSearch  	@Sanity
+  Scenario Outline: Verify user is able to Mutual Funds in Header search of Mutual Home page
+        Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    When User click on Mutual Fund
+    Then User search for Assert "Mutual Funds" in Header search box and verify its navigation
+   
+    Examples: 
+      | TestData     | TestData1                 |
+      | MoneyControl |HeaderSearchTestData |
+      
+            @Forum_post_a_comment 
+  Scenario Outline: Post a comment from 'Forum' link
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    When user click on Login Button and verify login page is displayed
+    And user enter pro user id and password and click on Login
+    Then user click on 'Forum' link
+    And user click on Trending option
+    And user enter comment and click on post buttn
+    
+    Examples: 
+      | TestData     | TestData1               |
+      | MoneyControl | LoginWithEmailTestData |
+

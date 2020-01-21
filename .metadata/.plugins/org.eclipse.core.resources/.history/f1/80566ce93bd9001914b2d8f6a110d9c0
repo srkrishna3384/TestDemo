@@ -1,0 +1,118 @@
+package step_definitions;
+
+import java.util.List;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.server.handler.ExecuteScript;
+
+import MoneyControlLocators.MutualFunds;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import groovy.ui.HistoryRecord;
+import utilities.GlobalUtil;
+import utilities.KeywordUtil;
+
+public class MF_TopRankedFunds {
+	@When("^user click on 'Mutual Funds' and then click on 'Top Ranked Funds'$")
+	public void click_On_Top_Ranked_Funds() {
+		KeywordUtil.waitForPresent60Sec(MutualFunds.mutualFundsBtn);
+		KeywordUtil.click(MutualFunds.mutualFundsBtn, "user clicked on 'MutualFund' Button");
+		KeywordUtil.waitForPresent60Sec(MutualFunds.topRankedFundsBtn);
+		KeywordUtil.click(MutualFunds.topRankedFundsBtn, "user clicked on 'TopRankedFunds' Button");
+
+	}
+
+	@When("^user click on 'Filter items' then select a Rank and click on 'Returns'$")
+	public void click_On_Returns() {
+		KeywordUtil.waitForPresent60Sec(MutualFunds.filterItems);
+		List<WebElement> filterList = GlobalUtil.getDriver()
+				.findElements(By.xpath("//div[@class='nsebsetab']/ul[@class='filtertabs']/li/a"));
+
+		// Loop for to select FilterItems
+		for (int i = 1; i <= filterList.size(); i++) {
+			KeywordUtil
+					.waitForPresent60Sec(By.xpath("//div[@class='nsebsetab']/ul[@class='filtertabs']/li[" + i + "]/a"));
+			KeywordUtil.delay(1000);
+			WebElement filterItemsName = GlobalUtil.getDriver()
+					.findElement(By.xpath("//div[@class='nsebsetab']/ul[@class='filtertabs']/li[" + i + "]/a"));
+			filterItemsName.click();
+			System.out.println("Finlter Name is :" + filterItemsName.getText());
+			KeywordUtil.delay(2000);
+
+			List<WebElement> radioList = GlobalUtil.getDriver().findElements(
+					By.xpath("//div[@class='accordion-tab-content topranked_stars']/div[" + i + "]//li//input"));
+			// System.out.println("Radio buttons List size is :" + radioList.size());
+			// loop for to select Radio Buttons
+			for (int j = 1; j <= radioList.size(); j++) {
+
+				KeywordUtil.waitForPresent60Sec(
+						By.xpath("//div[@class='accordion-tab-content topranked_stars']/div[" + i + "]//li//input"));
+				KeywordUtil.delay(500);
+
+				WebElement ele = GlobalUtil.getDriver().findElement(By.xpath(
+						"//div[@class='accordion-tab-content topranked_stars']/div[" + i + "]//li[" + j + "]//input"));
+				Actions action = new Actions(GlobalUtil.getDriver());
+				//action.moveToElement(ele).build().perform();
+				if (ele.isSelected()) {
+					System.out.println("Radio button selected");
+				} else {
+					
+					action.click(ele).build().perform();
+					System.out.println("clicked on Radio Button");
+
+				}
+				List<WebElement> returnsList = GlobalUtil.getDriver().findElements(MutualFunds.returnsList);
+				for (int k = 1; k <= returnsList.size(); k++) {
+					KeywordUtil.delay(2000);
+					String tabName = GlobalUtil.getDriver()
+							.findElement(By.xpath("//ul[@class='nav-tabs mctab']/li[" + k + "]/a")).getText();
+					KeywordUtil.clickJS(By.xpath("//ul[@class='nav-tabs mctab']/li[" + k + "]/a"),
+							"user clikced on " + tabName);
+					System.out.println("clicked on " + tabName);
+
+					// To click on Historic Returns
+					// KeywordUtil.waitForPresent60Sec(By.xpath("//div[@id='mf_perf_tab1']//li[1]/a"));
+					if (KeywordUtil.isWebElementPresent(By.xpath("//div[@id='mf_perf_tab1']//li[1]/a"), "")) {
+						GlobalUtil.getDriver().findElement(By.xpath("//div[@id='mf_perf_tab1']//li[1]/a")).click();
+						System.out.println("clicked on historicReturns");
+					}
+					//table[@id='dataTableId']/tbody/tr[@role='row'][6]
+					System.out.println();
+
+					List<WebElement> schemeNamesList = GlobalUtil.getDriver()
+							.findElements(By.xpath("//table[@id='dataTableId']/tbody/tr[@role='row']"));
+					for (int l = 1; l <= schemeNamesList.size(); l++) {
+						// KeywordUtil.getElementText(By.xpath("//table[@id='dataTableId']/tbody/tr["+l+"]/td"));
+
+							String schemeName = GlobalUtil.getDriver()
+									.findElement(By.xpath("//table[@id='dataTableId']/tbody/tr[@role='row'][" + l + "]/td/a"))
+									.getText();
+							System.out.println("Scheme Name is :" + schemeName);
+							String crisilRank = GlobalUtil.getDriver()
+									.findElement(By.xpath("//table[@id='dataTableId']/tbody/tr[@role='row'][" + l + "]/td[@class='crisil_col']/span"))
+									.getText();
+							System.out.println("Crisil Rank is :" + crisilRank);
+							System.out.println();
+
+						
+
+					}
+				}
+				/*JavascriptExecutor js = (JavascriptExecutor)GlobalUtil.getDriver();
+				js.executeScript("window.scrollBy(0,-200)");*/
+
+			}
+
+		}
+
+	}
+
+	@Then("^user get the values of 'Scheme Name' and 'Crisil Rank' from 'Historic Returns'$")
+	public void getValuesFrom_Historic_Returns() {
+
+	}
+
+}

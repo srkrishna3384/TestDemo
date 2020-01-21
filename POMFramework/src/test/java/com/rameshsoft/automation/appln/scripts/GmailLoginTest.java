@@ -1,0 +1,35 @@
+package com.rameshsoft.automation.appln.scripts;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
+
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.openqa.selenium.By;
+import org.testng.annotations.Test;
+
+import com.rameshsoft.automation.base.BaseEngine;
+import com.rameshsoft.automation.supporters.ExcelReader;
+import com.rameshsoft.automation.supporters.PropertiesUtilities;
+import com.rameshsoft.automation.utilities.FilePaths;
+import com.rameshsoft.automation.utilities.POJOSupporters;
+
+public class GmailLoginTest extends BaseEngine {
+
+	@Test
+	public void gmailLoginTest() throws IOException, EncryptedDocumentException, InvalidFormatException {
+		String URL = POJOSupporters.getConfObj().getPropertyValue("dev_url");
+		getDriver().get(URL);
+		
+		String un = POJOSupporters.getORObj().getPropertyValue("homepage_un_id");
+		String nxt = POJOSupporters.getORObj().getPropertyValue("homepage_next_id");
+		
+		
+		String unData = POJOSupporters.getExcelObj().getSingleCellData("java", 1, 1);
+		getDriver().findElement(By.id(un)).sendKeys(unData);
+		getDriver().findElement(By.id(nxt)).click();
+		getDriver().findElement(By.name(POJOSupporters.getORObj().getPropertyValue("homepage_pwd_name"))).sendKeys(POJOSupporters.getExcelObj().getSingleCellData("java", 1, 2));
+	}
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Suite">
+<!-- <listeners>
+ <listener class-name="com.rameshsoft.automation.listeners.ScreenshotListener"></listener>
+</listeners> -->
+<parameter name="browser" value="chrome"></parameter>
+  <test thread-count="5" name="Test">
+  <classes>
+  <!-- <class name="com.rameshsoft.automation.appln.scripts.PopupTest"></class> -->
+   <class name="com.rameshsoft.automation.appln.scripts.GmailPOMTest"></class>
+   <!-- <class name="com.rameshsoft.automation.appln.scripts.FBTest"></class> -->
+   <!-- <class name="com.rameshsoft.automation.appln.scripts.FBTest"></class>
+   <class name="com.rameshsoft.automation.appln.scripts.BingTest"></class> -->
+  </classes>
+  </test> <!-- Test -->
+</suite> <!-- Suite -->
+

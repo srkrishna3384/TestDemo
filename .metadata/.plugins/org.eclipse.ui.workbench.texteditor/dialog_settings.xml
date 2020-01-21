@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item value="false" key="isRegEx"/>
+		<item value="setPro" key="selection"/>
+		<item value="false" key="casesensitive"/>
+		<item value="false" key="incremental"/>
+		<item value="true" key="wrap"/>
+		<item value="false" key="wholeword"/>
+		<list key="findhistory">
+			<item value="setpro"/>
+			<item value="graph"/>
+			<item value="ResetStocks"/>
+			<item value="Forum_post_a_comment"/>
+			<item value="VerifyListOfTopShows"/>
+			<item value="HindiComapanyLinksNavigation "/>
+			<item value="HindiComapanyLinksNavigation"/>
+			<item value="HeaderSearch"/>
+			<item value="//ul[@class=&apos;trenlist&apos;]/li[1]"/>
+			<item value="header"/>
+			<item value="//h1"/>
+			<item value="stocksParticulars"/>
+			<item value="/a[contains(@href,&apos;dashboard/stock&apos;)]/h3"/>
+			<item value="postBtn"/>
+			<item value="//div[@class=&apos;comments_block clearfix&apos;]//li[1]//button[@type=&apos;button&apos; and text()=&apos;Post&apos;]"/>
+		</list>
+		<list key="replacehistory">
+			<item value=""/>
+			<item value="Indices name is"/>
+			<item value="/"/>
+			<item value="GlobalUtil.dataMap"/>
+			<item value="MoneyControlLocators"/>
+		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item value="284" key="DIALOG_WIDTH"/>
+		<item value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI" key="DIALOG_FONT_NAME"/>
+		<item value="391" key="DIALOG_HEIGHT"/>
+		<item value="936" key="DIALOG_X_ORIGIN"/>
+		<item value="170" key="DIALOG_Y_ORIGIN"/>
+	</section>
+</section>

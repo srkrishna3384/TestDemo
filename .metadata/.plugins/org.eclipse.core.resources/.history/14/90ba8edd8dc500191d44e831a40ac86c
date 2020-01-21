@@ -1,0 +1,82 @@
+Feature: Verify the 'Market' Tab functionality
+
+  @HindiLiveTV @Web2 @Web
+  Scenario Outline: Check if the user is able to watch Live tv in Hindi
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When User is on live TV page in "Hindi"
+    Then User should watch live TV in "Hindi"
+
+    Examples: 
+      | TestData    | TestData1     |
+      | MarketsPage | IndianIndices |
+
+  @GujaratiLiveTV @Web2 @Web
+  Scenario Outline: Check if the user is able to watch Live tv in Gujarath
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When User is on live TV page in "Gujarati"
+    Then User should watch live TV in "Gujarati"
+
+    Examples: 
+      | TestData    | TestData1     |
+      | MarketsPage | IndianIndices |
+
+  @BSEMarketTerminalsOfIndianIndices @Web2 @Web
+  Scenario Outline: Validate Market Terminals Indian Indices of moneycontrol with BSE
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    And Check if the user is directed to the Indian Markets page after clicking on Indian Indices
+    And Check if user is able to select 'Markets Terminal' and click on 'BSE' tab after landing on Indian Markets page
+    Then Check if the prices for the top four companies in every indices is having correct value and verify with BSE
+
+    Examples: 
+      | TestData    | TestData1     |
+      | MarketsPage | IndianIndices |
+
+  @NSEMarketTerminalsOfIndianIndices @Web2 @Web
+  Scenario Outline: Validate Market Terminals Indian Indices of moneycontrol with NSE
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    And Check if the user is directed to the Indian Markets page after clicking on Indian Indices
+    And Check if user is able to select 'Markets Terminal' and click on 'NSE' tab after landing on Indian Markets page
+    Then Check if the prices for the top four companies in every indices is having correct value and verify with NSE
+
+    Examples: 
+      | TestData    | TestData1     |
+      | MarketsPage | IndianIndices |
+
+  @BSELiveMarketsOfIndianIndices @Web2 @Web
+  Scenario Outline: Velidate Live Markets Indian Indices of moneycontrol with BSE
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    And Check if the user is directed to the Indian Markets page after clicking on Indian Indices
+    And Check if user is able to select 'Live Terminal' and click on 'BSE' tab after landing on Indian Markets page
+    Then Check if the prices of LiveMarkets in every indices is having correct value and verify with BSE
+
+    Examples: 
+      | TestData    | TestData1     |
+      | MarketsPage | IndianIndices |
+
+  @NSELiveMarketsOfIndianIndices @Web2 @Web
+  Scenario Outline: Velidate Live Markets Indian Indices of moneycontrol with NSE
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    And Check if the user is directed to the Indian Markets page after clicking on Indian Indices
+    And Check if user is able to select 'Live Terminal' and click on 'NSE' tab after landing on Indian Markets page
+    Then Check if the prices of LiveMarkets in every indices is having correct value and verify with NSE
+
+    Examples: 
+      | TestData    | TestData1     |
+      | MarketsPage | IndianIndices |
+
+  @GlobalMarket @Web2 @Web
+  Scenario Outline: Validate Global Markets of Indian Indices with Investing.com
+    Given Read the test data "<TestData>" and "<TestData1>" from Excel file
+    When user Navigate Money Control Page
+    Then user is on Global Market page
+    Then user checks all the Global Indices under 'US Markets', 'European Markets', 'Asian Markets' respectively
+    And User get the correct date for different indices of global market
+    And User Check values displayed for the Global Indices are correct
+
+    Examples: 
+      | TestData    | TestData1     |
+      | MarketsPage | IndianIndices |

@@ -1,0 +1,2047 @@
+package step_definitions;
+
+import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.server.handler.ExecuteScript;
+import org.sikuli.script.Button;
+import org.sikuli.script.FindFailed;
+import org.sikuli.script.Location;
+import org.sikuli.script.Screen;
+import org.sikuli.script.SikuliException;
+import org.testng.Assert;
+
+import com.gargoylesoftware.htmlunit.javascript.host.Set;
+import com.relevantcodes.extentreports.LogStatus;
+
+import MoneyControlLocators.HomePage;
+import MoneyControlLocators.LoginLocators;
+import MoneyControlLocators.MoneyControlShares;
+import MoneyControlLocators.PortfolioAddStocks;
+import MoneyControlLocators.PortfolioLoginPage;
+import MoneyControlLocators.ProUserLoginLocators;
+import cucumber.api.java.en.And;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import utilities.DriverUtil;
+import utilities.ExcelDataUtil;
+import utilities.GlobalUtil;
+import utilities.HTMLReportUtil;
+import utilities.KeywordUtil;
+
+public class CreateNewPortfolioAddStock {
+	private static String firstWinHandle = "";
+
+	@When("^user Navigate Money Control Page$")
+	public void user_Navigate_Money_Control_page_one() {
+		try {
+			GlobalUtil.setDriver(DriverUtil.getBrowser(GlobalUtil.getCommonSettings().getExecutionEnv(),
+					GlobalUtil.getCommonSettings().getBrowser()));
+			KeywordUtil.navigateToUrl(GlobalUtil.dataMap.get("URL"));
+			KeywordUtil.waitForPageToLoad();
+			KeywordUtil.delay(5000);
+			firstWinHandle = GlobalUtil.getDriver().getWindowHandle();
+		} catch (Throwable e) {
+			GlobalUtil.e = e;
+			GlobalUtil.ErrorMsg = e.getMessage();
+			Assert.fail(e.getMessage());
+		}
+
+	}
+
+	@When("^user click on portfolio button and verify create new account page displayed$")
+	public void portfolioBtn() {
+		KeywordUtil.click(PortfolioLoginPage.PortfolioBtn, "user click on portfolio button");
+		/*
+		 * assertEquals(KeywordUtil.getElementText(PortfolioLoginPage.
+		 * CreateNewPortfoliopage), "Don’t have a portfolio yet?",
+		 * "user verify create new portfolio page displayed");
+		 * MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.
+		 * passStringGreenColor("user verify create new portfolio page displayed"));
+		 */
+	}
+
+	@When("^user click on login to portfolio button and verify Login page displayed$")
+	public void user_click_on_create_new_portfolio_button_and_verify_signup_page_displayed()
+			throws InterruptedException {
+		KeywordUtil.click(PortfolioLoginPage.loginPortfolioBtn, "user clicked on Login to portfolio button");
+		KeywordUtil.switchToFrame("myframe");
+		// Thread.sleep(2000);
+		Assert.assertEquals(PortfolioLoginPage.loginText.equals("LOGIN"), false);
+		// assertEquals(PortfolioLoginPage.SignupTextOne, "SIGN UP", "user verified
+		// signup page displayed");
+		MoneyControlRunner.logger.log(LogStatus.PASS,
+				HTMLReportUtil.passStringGreenColor("user verified Login page displayed"));
+	}
+
+	@When("^user enter user name and password and click on login button$")
+	public void UserNameAndPwd() throws InterruptedException {
+		KeywordUtil.delay(3000);
+		KeywordUtil.inputText(PortfolioLoginPage.moneyControlUserName, GlobalUtil.dataMap.get("MCUserID"),
+				"Entered UserID");
+		KeywordUtil.inputText(PortfolioLoginPage.moneyControlPassword, GlobalUtil.dataMap.get("MCPassword"),
+				"Entered Password");
+		KeywordUtil.click(PortfolioLoginPage.loginBtn, "Clicked on login button");
+		KeywordUtil.switchFrameToBack();
+		KeywordUtil.delay(1000);
+	}
+
+	@When("^user enter version 3 user name and password and click on login button$")
+	public void versionThreeLogin() throws InterruptedException {
+		KeywordUtil.delay(3000);
+		KeywordUtil.inputText(PortfolioLoginPage.moneyControlUserName, GlobalUtil.dataMap.get("VersionThreeUserId"),
+				"Entered UserID");
+		KeywordUtil.inputText(PortfolioLoginPage.moneyControlPassword, GlobalUtil.dataMap.get("VersionThreePwd"),
+				"Entered Password");
+		KeywordUtil.click(PortfolioLoginPage.loginBtn, "Clicked on login button");
+		KeywordUtil.switchFrameToBack();
+		KeywordUtil.delay(1000);
+	}
+
+	String[] stock = { "" };
+	String[] qty = { "" };
+	String[] scheme = { "" };
+	String[] amount = { "" };
+	String[] ulip = { "" };
+	String[] price = { "" };
+	String[] instType = { "" };
+	String[] feature = { "" };
+	String[] option = { "" };
+
+	@Then("^User adds transactions to \"([^\"]*)\"$")
+	public void addTransactions(String sectionDetails) {
+		String subSection = sectionDetails.split(":")[1];
+		String section = sectionDetails.split(":")[0];
+		if (section.equals("Dashboard")) {
+			if (!subSection.equalsIgnoreCase("Dashboard")) {
+				KeywordUtil.delay(4000);
+				GlobalUtil.getDriver()
+						.findElement(By.xpath("//nav//a[contains(@href,'dashboard') and text()='" + subSection + " ']"))
+						.click();
+			}
+			KeywordUtil.delay(4000);
+			WebElement stockDisplay = GlobalUtil.getDriver().findElement(By.xpath("//a[text()='Stocks']"));
+			if (stockDisplay.isDisplayed()) {
+				KeywordUtil.clickJS(PortfolioAddStocks.stockAddBtn, "Clicked on 'Add Transaction' button.");
+			}
+		} else if (section.equals("Watchlist")) {
+			KeywordUtil.click(PortfolioAddStocks.WatchListMenuLink, "User cliked on 'WATCHLIST' link");
+			KeywordUtil.delay(3000);
+			GlobalUtil.getDriver()
+					.findElement(By.xpath("//nav//a[contains(@href,'watchlist') and text()='" + subSection + " ']"))
+					.click();
+			/*
+			 * WebElement ele =GlobalUtil.getDriver().findElement(By.
+			 * xpath("//nav//a[contains(@href,'watchlist') and text()='" + subSection +
+			 * " ']")); Actions act = new Actions((GlobalUtil.getDriver()));
+			 * act.moveToElement(ele).click().build().perform();
+			 */
+			// KeywordUtil.hoverOnElement(PortfolioAddStocks.watchList(subSection), "use
+			// clicks on links under watchlist");
+		}
+
+		KeywordUtil.waitForPageToLoad();
+		KeywordUtil.delay(3000);
+		int it = 0;
+		if (subSection.equals("Stocks")) {
+			// addTransactionBtn();
+			stock = GlobalUtil.dataMap.get("StockName").split("\n");
+			it = stock.length;
+			qty = GlobalUtil.dataMap.get("Quantity").split("\n");
+		} else if (subSection.equals("Mutual Funds")) {
+			// addTransactionBtn();
+			scheme = GlobalUtil.dataMap.get("Scheme").split("\n");
+			it = scheme.length;
+			amount = GlobalUtil.dataMap.get("Amount").split("\n");
+		} else if (subSection.equals("ULIPs")) {
+			// addTransactionBtn();
+			ulip = GlobalUtil.dataMap.get("Ulip").split("\n");
+			it = ulip.length;
+			amount = GlobalUtil.dataMap.get("Amount").split("\n");
+		} else if (subSection.equals("Bullion")) {
+			// addTransactionBtn();
+			qty = GlobalUtil.dataMap.get("Quantity").split("\n");
+			it = qty.length;
+			price = GlobalUtil.dataMap.get("Price/Unit").split("\n");
+
+		} else if (subSection.equals("Other Borrowings")) {
+			// addTransactionBtn();
+			instType = GlobalUtil.dataMap.get("InstrumentType/Name").split("\n");
+			it = instType.length;
+			amount = GlobalUtil.dataMap.get("Amount").split("\n");
+		} else if (subSection.equals("Stocks & F&O")) {
+			// addTransactionBtn();
+			stock = GlobalUtil.dataMap.get("StockName").split("\n");
+			it = stock.length;
+			feature = GlobalUtil.dataMap.get("WatchListFeatures").split("\n");
+			it = feature.length;
+			option = GlobalUtil.dataMap.get("WatchListOptions").split("\n");
+			it = option.length;
+		} else if (subSection.equals("Commodity")) {
+			// addTransactionBtn();
+			stock = GlobalUtil.dataMap.get("WatchListCommodity").split("\n");
+			it = stock.length;
+		} else if (subSection.equals("Currency")) {
+			// addTransactionBtn();
+			feature = GlobalUtil.dataMap.get("WatchListCurrency").split("\n");
+			it = feature.length;
+		}
+
+		// KeywordUtil.click(PortfolioAddStocks.stocksBtn, "User clicks on 'Stocks'
+		// button");
+		/*
+		 * KeywordUtil.delay(4000); WebElement stockDisplay =
+		 * GlobalUtil.getDriver().findElement(By.xpath("//a[text()='Stock']"));
+		 * if(!stockDisplay.isDisplayed()) {
+		 * KeywordUtil.clickJS(PortfolioAddStocks.stockAddBtn,
+		 * "Clicked on 'Add Transaction' button."); }
+		 */
+		/*
+		 * public static void addTransactionBtn() { KeywordUtil.delay(4000); WebElement
+		 * stockDisplay =
+		 * GlobalUtil.getDriver().findElement(By.xpath("//a[text()='Stock']"));
+		 * if(!stockDisplay.isDisplayed()) {
+		 * KeywordUtil.clickJS(PortfolioAddStocks.stockAddBtn,
+		 * "Clicked on 'Add Transaction' button."); }
+		 */
+		for (int i = 0; i < it; i++) {
+			int j = i;
+			if (i > 0)
+				i += 1;
+			List<WebElement> stocksTBs = GlobalUtil.getDriver().findElements(PortfolioAddStocks.stocksTextBox);
+			List<WebElement> qtyTBs = GlobalUtil.getDriver().findElements(PortfolioAddStocks.quantityTextBox);
+			List<WebElement> amountTBs = GlobalUtil.getDriver().findElements(PortfolioAddStocks.amountTextBox);
+			List<WebElement> ulipTBs = GlobalUtil.getDriver().findElements(PortfolioAddStocks.ulipTextBox);
+			List<WebElement> priceOrUnitTBs = GlobalUtil.getDriver()
+					.findElements(PortfolioAddStocks.priceOrUnitTextBox);
+			List<WebElement> instrumentTypeTBs = GlobalUtil.getDriver().findElements(PortfolioAddStocks.instrumentType);
+			// WebElement stocksDisplay =
+			// GlobalUtil.getDriver().findElement(By.xpath("//div[@class='clearfix']//h3[text()='Watchlist
+			// - Stocks/F&O']"));
+			// WebElement addMoreTransactionDisplay =
+			// GlobalUtil.getDriver().findElement((PortfolioAddStocks.addMoreBtn));
+			WebElement wLStocksTB = null;
+			WebElement wLFeatureTB = null;
+			WebElement wlOptionsTB = null;
+			if (KeywordUtil.isWebElementPresent(PortfolioAddStocks.watchListStocksFODisplay,
+					"user checked 'Watchlist -Stocks/F&O is displayed or not'")) {
+				wLStocksTB = GlobalUtil.getDriver().findElement(By.xpath(PortfolioAddStocks.watichListStockTextBox));
+				wLFeatureTB = GlobalUtil.getDriver().findElement(By.xpath(PortfolioAddStocks.watchListFeatureTextBox));
+				wlOptionsTB = GlobalUtil.getDriver().findElement(By.xpath(PortfolioAddStocks.watchListOptionsTextBox));
+			}
+			if (subSection.equals("Stocks")) {
+				KeywordUtil.delay(2000);
+				KeywordUtil.inputText(stocksTBs.get(i), stock[j],
+						"Entered <font color='red'>" + stock[j] + "</font> into Stocks text box " + i);
+				KeywordUtil.delay(4000);
+				KeywordUtil.hoverOnElement(By.xpath("//a[text()='" + stock[j] + "']"),
+						"Selected <font color='red'>" + stock[j] + "</font> from suggetion list.");
+				KeywordUtil.inputText(qtyTBs.get(i), qty[j],
+						"Entered quantity value <font color='red'>" + qty[j] + "</font> into Quantity textbox " + i);
+			} else if (subSection.equals("Mutual Funds")) {
+
+				KeywordUtil.delay(2000);
+
+				if (KeywordUtil.isWebElementPresent(PortfolioAddStocks.watchListSchemeName,
+						"user checked Mutual Funds 'Scheme Name'")) {
+					KeywordUtil.inputText(
+							GlobalUtil.getDriver().findElement(By.xpath(PortfolioAddStocks.watichListStockTextBox)),
+							scheme[j], "Entered <font color='red'>" + scheme[j] + "</font> into Scheme text box " + i);
+					KeywordUtil.delay(4000);
+					KeywordUtil.hoverOnElement(By.xpath("//ul[@class='asset_list_sugg']/li[1]"),
+							"Selected <font color='red'>" + scheme[j] + "</font> from suggetion list.");
+					KeywordUtil.delay(2000);
+					KeywordUtil.clickJS(By.xpath("//input[@id='ADD_MUTUALFUND_WL']"),
+							"user click on watch list 'Add' button");
+
+				} else {
+					KeywordUtil.delay(3000);
+					KeywordUtil.inputText(stocksTBs.get(i), scheme[j],
+							"Entered <font color='red'>" + scheme[j] + "</font> into Scheme text box " + i);
+					KeywordUtil.delay(4000);
+					KeywordUtil.hoverOnElement(By.xpath("(//a[text()='" + scheme[j] + "'])[1]"),
+							"Selected <font color='red'>" + scheme[j] + "</font> from suggetion list.");
+					KeywordUtil.inputText(amountTBs.get(i), amount[j],
+							"Entered Amount <font color='red'>" + amount[j] + "</font> in amount text box");
+				}
+			} else if (subSection.equals("ULIPs")) {
+				KeywordUtil.delay(5000);
+				KeywordUtil.inputText(ulipTBs.get(i), ulip[j],
+						"Entered <font color='red'>" + ulip[j] + "</font> into Ulips text box");
+				KeywordUtil.delay(4000);
+				KeywordUtil.hoverOnElement(By.xpath("//a[text()='" + ulip[j] + "']"),
+						"Selected <font color='red'>" + ulip[j] + "</font> from suggetion list.");
+				KeywordUtil.inputText(amountTBs.get(i), amount[j],
+						"Entered Amount <font color='red'>" + amount[j] + "</font> in amount text box");
+			} else if (subSection.equals("Bullion")) {
+				KeywordUtil.delay(5000);
+				KeywordUtil.inputText(qtyTBs.get(i), qty[j],
+						"Entered Quantity <font color='red'>" + qty[j] + "</font> into quantity text box");
+				KeywordUtil.delay(2000);
+				/*
+				 * KeywordUtil.hoverOnElement(By.xpath("//a[text()='" + qty[j] + "']"),
+				 * "Selected <font color='red'>" + qty[j] + "</font> from suggetion list.");
+				 */
+				KeywordUtil.inputText(priceOrUnitTBs.get(i), price[j],
+						"Entered Amount <font color='red'>" + price[j] + "</font> in amount text box");
+			} else if (subSection.equals("Other Borrowings")) {
+				KeywordUtil.delay(5000);
+				KeywordUtil.inputText(instrumentTypeTBs.get(i), instType[j],
+						"Entered <font color='red'>" + instType[j] + "</font> into Instrument type/name text box");
+				KeywordUtil.delay(5000);
+				/*
+				 * KeywordUtil.hoverOnElement(By.xpath("//a[text()='" + instType[j] + "']"),
+				 * "Selected <font color='red'>" + instType[j] +
+				 * "</font> from suggetion list.");
+				 */
+				KeywordUtil.inputText(priceOrUnitTBs.get(i), amount[j],
+						"Entered Amount <font color='red'>" + amount[j] + "</font> in amount text box");
+			} else if (subSection.equals("Stocks & F&O")) {
+				KeywordUtil.delay(5000);
+
+				KeywordUtil.inputText(
+						GlobalUtil.getDriver().findElement(By.xpath(PortfolioAddStocks.watichListStockTextBox)),
+						stock[j], "Entered <font color='red'>" + stock[j] + " </font>into Stocks text box");
+				KeywordUtil.delay(4000);
+				/*
+				 * KeywordUtil.click(By.xpath("(//ul[@class='asset_list_sugg'])[1]//li[1]"),
+				 * "Selected <font color='red'>" + stock[j] + "</font> from suggetion list.");
+				 */
+
+				KeywordUtil.hoverOnElement(By.xpath("(//ul[@class='asset_list_sugg'])[1]//li[1]"),
+						"Selected <font color='red'>" + stock[j] + "</font> from suggetion list.");
+
+				KeywordUtil.delay(2000);
+				KeywordUtil.clickJS(By.xpath("//input[@id='ADD_STOCK_WL']"), "user click on watch list 'Add' button");
+				// KeywordUtil.click(PortfolioAddStocks.watchListAddBtn, "user click on watch
+				// list 'Add' button");
+
+				KeywordUtil.delay(2000);
+				KeywordUtil.clickJS(PortfolioAddStocks.watchListFeaturesBtn, "user click on 'Features' link");
+				KeywordUtil.delay(2000);
+				// KeywordUtil.hoverOnElement(By.xpath("//div[@id='keynwstb2']//input[@name='txt_future_watchlist']"),
+				// "User place at 'Feature' text box");
+				// KeywordUtil.inputText(wLFeaturesTB, feature[j], "Entered <font
+				// color='red'>"+feature[j]+"</font> into Feature text box");
+				// KeywordUtil.inputText(wLFeatureTB, feature[j], "Entered <font
+				// color='red'>"+feature[j]+"</font> into Feature text box");
+				KeywordUtil.inputText(
+						GlobalUtil.getDriver().findElement(By.xpath(PortfolioAddStocks.watchListFeatureTextBox)),
+						feature[j], "Entered <font color='red'>" + feature[j] + "</font> into Feature text box");
+				KeywordUtil.delay(5000);
+				/*
+				 * KeywordUtil.click(By.xpath("(//ul[@class='asset_list_sugg'])[1]//li[1]"),
+				 * "Selected <font color='red'>" + feature[j] + "</font> from suggetion list.");
+				 */
+
+				/*
+				 * KeywordUtil.hoverOnElement(By.xpath("//a[text()='" + feature[j] + "']"),
+				 * "Selected <font color='red'>" + feature[j] + "</font> from suggetion list.");
+				 */
+				KeywordUtil.hoverOnElement(By.xpath("(//ul[@class='asset_list_sugg'])[1]//li[1]"),
+						"Selected <font color='red'>" + feature[j] + "</font> from suggetion list.");
+
+				KeywordUtil.delay(1000);
+				KeywordUtil.clickJS(By.xpath("//input[@id='ADD_STKFUT_WL']"), "user click on watch list 'Add' button");
+				// KeywordUtil.click(PortfolioAddStocks.watchListAddBtn, "user click on watch
+				// list 'Add' button");
+
+				KeywordUtil.delay(2000);
+				KeywordUtil.clickJS(PortfolioAddStocks.watchListOptionsBtn, "user click on 'Options' link");
+				KeywordUtil.inputText(
+						GlobalUtil.getDriver().findElement(By.xpath(PortfolioAddStocks.watchListOptionsTextBox)),
+						option[j], "Entered <font color='red'>" + option[j] + " </font>into Stocks Name text box");
+				KeywordUtil.delay(4000);
+				/*
+				 * KeywordUtil.click(By.xpath("(//ul[@class='asset_list_sugg'])[2]//li[1]"),
+				 * "Selected <font color='red'>" + option[j] + " </font>from suggetion list.");
+				 */
+
+				KeywordUtil.hoverOnElement(By.xpath("(//ul[@class='asset_list_sugg'])[1]//li[1]"),
+						"Selected <font color='red'>" + option[j] + " </font>from suggetion list.");
+
+				KeywordUtil.selectByValue(PortfolioAddStocks.watchListOptTypeDD, "CE",
+						"user selected option from 'Option Type' dropdown box");
+				/*
+				 * KeywordUtil.click(PortfolioAddStocks.watchListOptTypeDD,
+				 * "user clicked on 'Option Type' drop down box");
+				 * KeywordUtil.click(PortfolioAddStocks.watchListOptType,
+				 * "user selected 'Option Type'");
+				 */
+				KeywordUtil.delay(2000);
+				KeywordUtil.clickJS(By.xpath("//input[@id='ADD_STKOPT_WL']"), "user click on watch list 'Add' button");
+				// KeywordUtil.click(PortfolioAddStocks.watchListAddBtn, "user click on watch
+				// list 'Add' button");
+				KeywordUtil.delay(2000);
+				KeywordUtil.click(PortfolioAddStocks.watchListStockBtn, "user clicked on 'Stock' button");
+
+			} else if (subSection.equals("Commodity")) {
+				KeywordUtil.delay(5000);
+
+				KeywordUtil.inputText(
+						GlobalUtil.getDriver().findElement(By.xpath(PortfolioAddStocks.watichListStockTextBox)),
+						stock[j], "Entered <font color='red'>" + stock[j] + " </font>into Stocks text box");
+				KeywordUtil.delay(4000);
+				KeywordUtil.hoverOnElement(By.xpath("//div[@class='jspContainer']//ul[@class='asset_list_sugg']/li[1]"),
+						"Selected <font color='red'>" + stock[j] + "</font> from suggetion list.");
+				KeywordUtil.delay(2000);
+				KeywordUtil.clickJS(By.xpath("//input[@id='ADD_COMMODITY_WL']"),
+						"user click on watch list 'Add' button");
+			} else if (subSection.equals("Currency")) {
+				KeywordUtil.hoverOnElement(PortfolioAddStocks.watchlListCurrencyTextBox,
+						"user placed the curser at currency textbox");
+				KeywordUtil.inputText((PortfolioAddStocks.watchlListCurrencyTextBox), feature[j],
+						"Entered <font color='red'>" + feature[j] + "</font> into 'Currency' text box");
+				KeywordUtil.delay(4000);
+				KeywordUtil.hoverOnElement(By.xpath("//div[@class='jspContainer']//ul[@class='asset_list_sugg']/li[1]"),
+						"Selected <font color='red'>" + feature[j] + "</font> from suggetion list.");
+				KeywordUtil.delay(2000);
+				KeywordUtil.clickJS(By.xpath("//input[@id='ADD_CURNFUT_WL']"), "user click on watch list 'Add' button");
+				// KeywordUtil.click(PortfolioAddStocks.watchListOptionsBtn, "User cliked on
+				// 'Options' button");
+
+			}
+
+			if ((i < it - 1)) {
+				// WebElement addMoreTransactionDisplay =
+				// GlobalUtil.getDriver().findElement((PortfolioAddStocks.addMoreBtn));
+				if (KeywordUtil.isWebElementPresent(PortfolioAddStocks.addMoreBtn,
+						"user checked 'Add More Transcation' button is displayed or not")) {
+					KeywordUtil.hoverOnElement(PortfolioAddStocks.addMoreBtn,
+							"Clicked on 'Add More Transaction' button.");
+				}
+			}
+			/*
+			 * if (!subSection.equals("ULIPs")) { if ((i < (it - 1)))
+			 * KeywordUtil.hoverOnElement(PortfolioAddStocks.addMoreBtn,
+			 * "Clicked on 'Add More Transaction' button."); } else { if ((i < it))
+			 * KeywordUtil.hoverOnElement(PortfolioAddStocks.addMoreBtn,
+			 * "Clicked on 'Add More Transaction' button."); }
+			 */
+			if (i > 0)
+				i -= 1;
+
+		}
+		if (KeywordUtil.isWebElementPresent(PortfolioAddStocks.addTransactionBtn,
+				"user checked 'Add Transaction' button is displayed or not "))
+			KeywordUtil.hoverOnElement(PortfolioAddStocks.addTransactionBtn,
+					"User clicks on 'Add Transaction Button' and data added successfully");
+		KeywordUtil.delay(5000);
+	}
+
+	@And("^verify Version four dashboard$")
+	public void versionFour() {
+		KeywordUtil.delay(4000);
+		assertEquals(KeywordUtil.getElementText(LoginLocators.dashBoardText), "DASHBOARD",
+				"User verified portfolio version4 login page");
+		MoneyControlRunner.logger.log(LogStatus.PASS,
+				HTMLReportUtil.passStringGreenColor("User verified portfolio version 4 Dashboard"));
+
+	}
+
+	@And("^verify Version three portfolio login page$")
+	public void versionThree() {
+		KeywordUtil.delay(4000);
+		JavascriptExecutor js = (JavascriptExecutor) GlobalUtil.getDriver();
+		js.executeScript("window.scrollBy(0,700)");
+		Assert.assertTrue(KeywordUtil.getElementText(LoginLocators.versionThreeText).contains("Version 3"),
+				"user veified portfolio version three login page");
+		MoneyControlRunner.logger.log(LogStatus.PASS,
+				HTMLReportUtil.passStringGreenColor("user veified portfolio version three login page"));
+
+	}
+
+	@Then("^User verified in 'WATCHLIST' added Stocks are displayed or not$")
+	public void watchListStocksDisplays() {
+		KeywordUtil.click(PortfolioAddStocks.watchListStockFOBtn, "user clicks on 'Stocks & F & O' button");
+		KeywordUtil.delay(2000);
+		String watchListStocksFO = GlobalUtil.getDriver().findElement(PortfolioAddStocks.watchListTable).getText();
+
+		String[] stocks = GlobalUtil.dataMap.get("StockName").split("\n");
+		String[] features = GlobalUtil.dataMap.get("WatchListFeatures").split("\n");
+		String[] options = GlobalUtil.dataMap.get("WatchListOptions").split("\n");
+		String[] schemes = GlobalUtil.dataMap.get("Scheme").split("\n");
+		String[] commod = GlobalUtil.dataMap.get("WatchListCommodity").split("\n");
+		String[] currency = GlobalUtil.dataMap.get("WatchListCurrency").split("\n");
+		// System.out.println("stock is :"+stocks);
+		for (int i = 0; i < stocks.length; i++) {
+			if (watchListStocksFO.contains(stocks[i])) {
+				MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.passStringGreenColor(
+						"user verified <font color='red'>" + stocks[i] + " </font>Stock is shown in 'WATCHLIST' "));
+			}
+		}
+		for (int i = 0; i < features.length; i++) {
+			if (watchListStocksFO.contains(features[i])) {
+				MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.passStringGreenColor(
+						"user verified <font color='red'>" + features[i] + " </font>Stock is shown in 'WATCHLIST' "));
+			}
+		}
+
+		for (int i = 0; i < options.length; i++) {
+			if (watchListStocksFO.contains(options[i])) {
+				MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.passStringGreenColor(
+						"user verified <font color='red'>" + options[i] + " </font>Stock is shown in 'WATCHLIST' "));
+			}
+		}
+		KeywordUtil.delay(2000);
+		KeywordUtil.hoverOnElement(PortfolioAddStocks.watchListMutualFundBtn, "user clicked on 'Mutual Funds' button");
+		String watchListMF = GlobalUtil.getDriver().findElement(PortfolioAddStocks.watchListTable).getText();
+		for (int i = 0; i < schemes.length; i++) {
+			if (watchListMF.contains(schemes[i])) {
+				MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.passStringGreenColor(
+						"user verified <font color='red'>" + schemes[i] + " </font>Stock is shown in 'WATCHLIST' "));
+			}
+		}
+		/*
+		 * KeywordUtil.delay(2000);
+		 * KeywordUtil.hoverOnElement(PortfolioAddStocks.watchListCommodBtn,
+		 * "user clicked on 'Commodity' button"); String watchListCommod =
+		 * GlobalUtil.getDriver().findElement(PortfolioAddStocks.watchListTable).getText
+		 * (); for(int i=0;i<commod.length;i++) {
+		 * if(watchListCommod.contains(commod[i])) {
+		 * MoneyControlRunner.logger.log(LogStatus.PASS,
+		 * HTMLReportUtil.passStringGreenColor("user verified <font color='red'>"+commod
+		 * [i]+ " </font>Stock is shown in 'WATCHLIST' ")); } }
+		 */
+		KeywordUtil.delay(2000);
+		KeywordUtil.hoverOnElement(PortfolioAddStocks.watchListCurrencyBtn, "user clicked on 'Currency' button");
+		String watchListCurrency = GlobalUtil.getDriver().findElement(PortfolioAddStocks.watchListTable).getText();
+		for (int i = 0; i < currency.length; i++) {
+			if (watchListCurrency.contains(currency[i])) {
+				MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.passStringGreenColor(
+						"user verified <font color='red'>" + currency[i] + " </font>Stock is shown in 'WATCHLIST' "));
+			}
+		}
+	}
+
+	@Then("^user clicks on Dashboard and verify My Net Worth, Asserts and Liabilities$")
+	public void verifyDashboard() {
+		KeywordUtil.delay(3000);
+		KeywordUtil.click(PortfolioAddStocks.dashBoardBtn, "User cliks on DashBoard button");
+		List<WebElement> DBTable = GlobalUtil.getDriver().findElements(PortfolioAddStocks.dashBoardTable);
+		int total_value = 0;
+		int total_value1 = 0;
+		// ArrayList<String> al = new ArrayList<>();
+
+		for (int i = 1; i <= DBTable.size(); i++) {
+			String latestValue = GlobalUtil.getDriver()
+					.findElement(By.xpath(
+							"//table[@class='stktable table-striped footable footable-1 breakpoint-lg']/tbody/tr[" + i
+									+ "]/td[3]"))
+					.getText();
+
+			System.out.println("latest value" + latestValue);
+			if (latestValue.contains(",")) {
+				latestValue = latestValue.replace(",", "");
+			}
+			String lv[] = latestValue.split("\n");
+
+			String particulars = GlobalUtil.getDriver()
+					.findElement(By.xpath(
+							"//table[@class='stktable table-striped footable footable-1 breakpoint-lg']/tbody/tr[" + i
+									+ "]//a"))
+					.getText();
+			System.out.println("particulars " + particulars);
+
+			String p = "Stocks Mutual Funds ULIPs Bullion Fixed Income Property Other Assets";
+
+			if (p.contains(particulars)) {
+				System.out.println("parse to Int : " + Integer.parseInt(lv[0]));
+				System.out.println("total value before: " + total_value);
+				total_value = total_value + Integer.parseInt(lv[0]);
+				// al.add(lv[0]);
+			}
+			System.out.println("total value of My Asserts : " + total_value);
+			String p1 = "Loans Other Borrowings";
+			if (p1.contains(particulars)) {
+				System.out.println("parse to Int : " + Integer.parseInt(lv[0]));
+				System.out.println("total value before: " + total_value1);
+				total_value1 = total_value1 + Integer.parseInt(lv[0]);
+			}
+			System.out.println("total value of My Liabilities : " + total_value1);
+
+		}
+
+		String myNetworthValue = GlobalUtil.getDriver().findElement(PortfolioAddStocks.myNetworthValue).getText();
+		if (myNetworthValue.contains(",")) {
+			myNetworthValue = myNetworthValue.replace(",", "");
+		}
+		String myAssetValue = GlobalUtil.getDriver().findElement(PortfolioAddStocks.myAssetValue).getText();
+		if (myAssetValue.contains(",")) {
+			myAssetValue = myAssetValue.replace(",", "");
+		}
+
+		String myLiabilitiesValue = GlobalUtil.getDriver().findElement(PortfolioAddStocks.myLiabilitiesValue).getText();
+		if (myLiabilitiesValue.contains(",")) {
+			myLiabilitiesValue = myLiabilitiesValue.replace(",", "");
+		}
+		int MNValue = Integer.parseInt(myNetworthValue);
+		int MAValue = Integer.parseInt(myAssetValue);
+		int MLValue = Integer.parseInt(myLiabilitiesValue);
+		if (MAValue - total_value < 10) {
+			MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil
+					.passStringGreenColor("verified the sum of Latest Values of Assets are equals to My Assets value"));
+		}
+		if (total_value1 == MLValue) {
+			MoneyControlRunner.logger.log(LogStatus.PASS,
+					HTMLReportUtil
+							.passStringGreenColor("verified the sum of Latest Values of Liabilities <font color='red'>"
+									+ total_value1 + "</font> are equals to My Assets value <font color='red'>"
+									+ myLiabilitiesValue + "</font>"));
+		}
+		if (MAValue - MLValue == MNValue) {
+			MoneyControlRunner.logger.log(LogStatus.PASS,
+					HTMLReportUtil.passStringGreenColor(
+							"verified the difference between My Asset Value <font color='red'>" + myAssetValue
+									+ "</font> and My Liabilities Value <font color='red'>" + myLiabilitiesValue
+									+ "</font> is equals to My Networth values ie.<font color='red'>" + myNetworthValue
+									+ "</font>"));
+		} else {
+			MoneyControlRunner.logger.log(LogStatus.PASS,
+					HTMLReportUtil.passStringGreenColor(
+							"verified the difference between My Asset Value <font color='red'>" + myAssetValue
+									+ "</font> and My Liabilities Value <font color='red'>" + myLiabilitiesValue
+									+ "</font> are not equals to My Networth values ie.<font color='red'>"
+									+ myNetworthValue + "</font>"));
+		}
+	}
+
+	@Then("^user click on WATCHLIST button$")
+	public void watchListClick() {
+		KeywordUtil.click(PortfolioAddStocks.watchListButton, "user clicks on 'WATCHLIST' button");
+	}
+
+	String[] inputValues;
+	String[] percentageValue;
+	Float[] mcPercentageFloatValue;
+	Float[] moneyControlTradingValue;
+	Float[] moneyControlUpAndDownValue;
+	Float[] moneyControlPreviousValue;
+
+	@When("^user captures stock values from MoneyControl$")
+	public void user_enter_a_text_and_click_on_search_button_and_verify_Share_Stock_price_page_displayed() {
+		// String[] inputValues = GlobalUtil.dataMap.get("InputValue").split("\n");
+		KeywordUtil.delay(3000);
+		inputValues = GlobalUtil.dataMap.get("InputValue").split("\n");
+		String[] mcTrading = new String[inputValues.length];
+		String[] mcPrev = new String[inputValues.length];
+		moneyControlTradingValue = new Float[inputValues.length];
+		moneyControlUpAndDownValue = new Float[inputValues.length];
+		percentageValue = new String[inputValues.length];
+		moneyControlPreviousValue = new Float[inputValues.length];
+		mcPercentageFloatValue = new Float[inputValues.length];
+
+		for (int i = 0; i < inputValues.length; i++) {
+			KeywordUtil.delay(2000);
+			GlobalUtil.getDriver().findElement(MoneyControlShares.MCInput).sendKeys(inputValues[i]);
+			/*
+			 * KeywordUtil.inputText(MoneyControlShares.MCInput, inputValues[i],
+			 * "Entered <font color='magenta'>" + inputValues[i] +
+			 * "</font> into Money control search box");
+			 */
+			KeywordUtil.pressEnter(MoneyControlShares.MCInput);
+			String percentage = KeywordUtil.getElementText(MoneyControlShares.MCpercChangeValue);
+			System.out.println(percentage);
+			String[] percentage1 = percentage.split(" ");
+			System.out.println(percentage1);
+			percentage = percentage1[1];
+			System.out.println(percentage);
+
+			percentage = percentage.substring(2, percentage.length() - 2);
+			percentageValue[i] = percentage;
+			System.out.println("Percentage value :" + percentageValue[i]);
+			mcPercentageFloatValue[i] = Float.parseFloat(percentageValue[i]);
+			// moneyControlTradingValue[i] =
+			// Float.parseFloat(KeywordUtil.getElementText(MoneyControlShares.MCTradingValue));
+			String mctv = KeywordUtil.getElementText(MoneyControlShares.MCTradingValue);
+			if (mctv.contains(",")) {
+				mcTrading[i] = mctv.replaceAll(",", "");
+				System.out.println(mcTrading[i]);
+			} else {
+				mcTrading[i] = mctv;
+				System.out.println(mcTrading[i]);
+			}
+			moneyControlTradingValue[i] = Float.parseFloat(mcTrading[i]);
+			moneyControlUpAndDownValue[i] = Float
+					.parseFloat(KeywordUtil.getElementText(MoneyControlShares.MCUpAndDownValue));
+			// moneyControlPreviousValue[i] =
+			// Float.parseFloat(KeywordUtil.getElementText(MoneyControlShares.MCPreviousClose));
+			String mcpc = KeywordUtil.getElementText(MoneyControlShares.MCPreviousClose);
+			if (mcpc.contains(",")) {
+				mcPrev[i] = mcpc.replaceAll(",", "");
+			} else {
+				mcPrev[i] = mcpc;
+			}
+			moneyControlPreviousValue[i] = Float.parseFloat(mcPrev[i]);
+			/*
+			 * MoneyControlRunner.logger.log(LogStatus.PASS,
+			 * HTMLReportUtil.passStringGreenColor(
+			 * "MoneyControl NSE current trading value of <font color='magenta'>" +
+			 * inputValues[i] + " </font>is <font color='magenta'>" +
+			 * moneyControlNSEDisplayvalue[i] + "</font>"));
+			 * MoneyControlRunner.logger.log(LogStatus.PASS,
+			 * HTMLReportUtil.passStringGreenColor("MoneyControl Difference from LTP of " +
+			 * inputValues[i] + " is <font color='magenta'>" + moneyControlUpAndDownValue[i]
+			 * + "</font>")); MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.
+			 * passStringGreenColor("MoneyControl percentage change from LTP of " +
+			 * inputValues[i] + " value is <font color='magenta'>" + percentageValue[i] +
+			 * "%</font>")); MoneyControlRunner.logger.log(LogStatus.PASS,
+			 * HTMLReportUtil.passStringGreenColor("MoneyControl previous close of " +
+			 * inputValues[i] + " is <font color='magenta'>" + moneyControlPreviousValue[i]
+			 * + "</font>"));
+			 */
+			/*
+			 * System.out.println("MoneyControlNSEDisplayvalue of"+inputValues[i]+" is "
+			 * +MoneyControlNSEDisplayvalue[i]);
+			 * System.out.println("MoneyControlDiffValue "+inputValues[i]+" is "
+			 * +MoneyControlDiffValue[i]);
+			 */
+		}
+		// DriverUtil.closeAllDriver();
+
+	}
+
+	@Then("^user verifies stock values in NSE$")
+	public void verifiedStockValuesInNSE() {
+		try {
+			/*
+			 * GlobalUtil.setDriver(DriverUtil.getBrowser(GlobalUtil.getCommonSettings().
+			 * getExecutionEnv(), GlobalUtil.getCommonSettings().getBrowser()));
+			 */
+			KeywordUtil.navigateToUrl(GlobalUtil.dataMap.get("NSEURL"));
+			KeywordUtil.waitForPageToLoad();
+			firstWinHandle = GlobalUtil.getDriver().getWindowHandle();
+		} catch (Throwable e) {
+			GlobalUtil.e = e;
+			GlobalUtil.ErrorMsg = e.getMessage();
+			Assert.fail(e.getMessage());
+		}
+		inputValues = GlobalUtil.dataMap.get("InputValue").split("\n");
+		String[] nseTrading = new String[inputValues.length];
+		String[] npcPrev = new String[inputValues.length];
+		Float[] nseTradingValue = new Float[inputValues.length];
+		Float[] nseUpAndDownValue = new Float[inputValues.length];
+		Float[] nsePercChangeValue = new Float[inputValues.length];
+		Float[] nsePreviousCloseValue = new Float[inputValues.length];
+		Float[] nsePercentageFloatValue = new Float[inputValues.length];
+		for (int i = 0; i < inputValues.length; i++) {
+
+			KeywordUtil.inputText(MoneyControlShares.NSEInput, inputValues[i],
+					"Entered <font color='magenta'>" + inputValues[i] + "</font> into search box");
+			KeywordUtil.delay(3000);
+			KeywordUtil.pressEnter(MoneyControlShares.NSEInput);
+			KeywordUtil.waitForPageToLoad();
+			KeywordUtil.delay(3000);
+			// nseTradingValue[i] =
+			// Float.parseFloat(KeywordUtil.getElementText(MoneyControlShares.NSETradingValue));
+			String changevalue = KeywordUtil.getElementText(MoneyControlShares.NSEDownValue);
+			if (changevalue.length() < 1) {
+				changevalue = "0";
+			}
+			nseUpAndDownValue[i] = Float.parseFloat(changevalue);
+			String ntv = KeywordUtil.getElementText(MoneyControlShares.NSETradingValue);
+			if (ntv.contains(",")) {
+				nseTrading[i] = ntv.replaceAll(",", "");
+			} else {
+				nseTrading[i] = ntv;
+			}
+			nseTradingValue[i] = Float.parseFloat(nseTrading[i]);
+			String percentage = KeywordUtil.getElementText(MoneyControlShares.NSEPercChangeValue);
+			nsePercentageFloatValue[i] = Float.parseFloat(percentage.substring(1, percentage.length() - 1));
+			String npc = KeywordUtil.getElementText(MoneyControlShares.NSEPreviousClose);
+			if (npc.contains(",")) {
+				npcPrev[i] = npc.replaceAll(",", "");
+			} else {
+				npcPrev[i] = npc;
+			}
+			nsePreviousCloseValue[i] = Float.parseFloat(npcPrev[i]);
+
+			/*
+			 * MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.
+			 * passStringGreenColor("NSE current trading value of <font color='magenta'>" +
+			 * inputValues[i] + " </font>is <font color='magenta'>" + nseTradingValue[i]
+			 * +"</font> and Difference from LTP is <font color='magenta'> "+
+			 * nseUpAndDownValue[i] +
+			 * "</font> and percentage change from LTP is <font color='magenta'>" +
+			 * nsePercChangeValue[i] +
+			 * "</font> and previous close value is <font color='magenta'>" +
+			 * nsePreviousCloseValue[i] + "</font>"));
+			 */
+			/*
+			 * MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.
+			 * passStringGreenColor("NSE Difference from LTP of <font color='magenta'>" +
+			 * inputValues[i] + " </font>is <font color='magenta'>" + nseUpAndDownValue[i] +
+			 * "</font>"));
+			 * 
+			 * MoneyControlRunner.logger.log(LogStatus.PASS,
+			 * HTMLReportUtil.passStringGreenColor(
+			 * "NSE percentage change from LTP of <font color='magenta'>" + inputValues[i] +
+			 * " </font>is <font color='magenta'>" + nsePercChangeValue[i] + "</font>"));
+			 * 
+			 * MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.
+			 * passStringGreenColor("NSE previous close of <font color='magenta'>" +
+			 * inputValues[i] + " </font>is <font color='magenta'>" +
+			 * nsePreviousCloseValue[i] + "</font>"));
+			 */
+			// String mcPercentageValue=mcPercentageFloatValue[i].toString();
+
+			float diffBwMCAndNSETradingValue = moneyControlTradingValue[i] - nseTradingValue[i];
+			System.out.println(diffBwMCAndNSETradingValue);
+			MoneyControlRunner.logger.log(LogStatus.PASS,
+					HTMLReportUtil.passStringGreenColor("MoneyControl Trading Value is :<font color='magenta'>"
+							+ moneyControlTradingValue[i] + "</font>and NSE trading Value is :<font color='magenta'>"
+							+ nseTradingValue[i] + " </font>and their difference is <font color='magenta'>"
+							+ diffBwMCAndNSETradingValue + "</font>"));
+
+			float diffBwMCAndNSEUPDownValue = moneyControlUpAndDownValue[i] - nseUpAndDownValue[i];
+			System.out.println(diffBwMCAndNSEUPDownValue);
+			MoneyControlRunner.logger.log(LogStatus.PASS,
+					HTMLReportUtil.passStringGreenColor(
+							"MoneyControl Up and Down Value is :<font color='magenta'>" + moneyControlUpAndDownValue[i]
+									+ " </font>and NSE Up and Down Value is :<font color='magenta'>"
+									+ nseUpAndDownValue[i] + " </font>and their difference is <font color='magenta'>"
+									+ diffBwMCAndNSEUPDownValue + "</font>"));
+
+			float diffBwMCAndNSEPreCloseValue = moneyControlPreviousValue[i] - nsePreviousCloseValue[i];
+			System.out.println(diffBwMCAndNSEPreCloseValue);
+			MoneyControlRunner.logger.log(LogStatus.PASS,
+					HTMLReportUtil.passStringGreenColor("MoneyControl previous close Value is :<font color='magenta'>"
+							+ moneyControlPreviousValue[i]
+							+ " </font>and NSE previous close Value is :<font color='magenta'>"
+							+ nsePreviousCloseValue[i] + " </font>and their difference is <font color='magenta'>"
+							+ diffBwMCAndNSEPreCloseValue + "</font>"));
+
+			// System.out.println();
+			float percentageDiffValue = mcPercentageFloatValue[i] - nsePercentageFloatValue[i];
+			if (percentageDiffValue <= 2) {
+				MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.passStringGreenColor(
+						"Money Control percentage change value is: <font color='magenta': >" + mcPercentageFloatValue[i]
+								+ " </font>and NSE percentage change value is <font color:'magenta'>"
+								+ nsePercentageFloatValue[i] + " </font>and their difference is <font color='magenta'>:"
+								+ percentageDiffValue + " </font>which is below 2%"));
+			} else {
+				MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.passStringGreenColor(
+						"Money Control percentage change value is: <font color='magenta': >" + mcPercentageFloatValue[i]
+								+ " </font>and NSE percentage change value is <font color:'magenta'>:"
+								+ nsePercentageFloatValue[i] + " </font>and their difference is <font color='magenta'>:"
+								+ percentageDiffValue + " </font>which is above 2%"));
+
+			}
+
+		}
+		GlobalUtil.getDriver().close();
+	}
+
+	@When("^user enter non pro user id and password and click on login button$")
+	public void user_enter_non_pro_user_id_and_password_and_click_on_login_button() {
+		KeywordUtil.delay(3000);
+		KeywordUtil.inputText(ProUserLoginLocators.UserName, GlobalUtil.dataMap.get("MCNonProUserId"),
+				"user entered pro user id");
+		KeywordUtil.inputText(ProUserLoginLocators.UserPassword, GlobalUtil.dataMap.get("MCNonProPwd"),
+				"user entered pro user password");
+		KeywordUtil.click(ProUserLoginLocators.LoginBtn, "user clicked on login button");
+	}
+
+	@When("^user click on Login Button and verify login page is displayed$")
+	public void user_click_on_Login_Button_and_verify_Loginpage_is_displayed() {
+		try {
+			KeywordUtil.click(ProUserLoginLocators.Login, "click on login button");
+			KeywordUtil.switchToFrame("myframe");
+			assertEquals(KeywordUtil.getElementText(ProUserLoginLocators.LoginDisplay), "LOGIN",
+					"user verified login page displayed");
+			MoneyControlRunner.logger.log(LogStatus.PASS,
+					HTMLReportUtil.passStringGreenColor("user verified login page displayed"));
+		} catch (Throwable e) {
+			GlobalUtil.e = e;
+			GlobalUtil.ErrorMsg = e.getMessage();
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@When("^user click on News button$")
+	public void user_click_on_News_button() {
+		KeywordUtil.click(ProUserLoginLocators.NewsBtn, "User clicked on News Button");
+	}
+
+	@When("^User click a link at OPINION tab and verify that non pro users are not able to see exclusive Moneycontrol Pro content fully$")
+	public void User_click_a_link_at_OPINION_tab_and_verify_that_non_pro_users_are_not_able_to_see_exclusive_Moneycontrol_pro_content_fully() {
+		try {
+			KeywordUtil.scrollDown(0, 300);
+			List<WebElement> Elementlist = GlobalUtil.getDriver()
+					.findElements(By.xpath(ProUserLoginLocators.OpinionTable));
+			System.out.println("Total elements are : " + Elementlist.size());
+
+			// int count = 0;
+			// String temp = null;
+			for (int i = 0; i < Elementlist.size(); i++) {
+				KeywordUtil.waitForClickable(ProUserLoginLocators.dynamicOpinionPaginations(i + 1));
+				KeywordUtil.click(ProUserLoginLocators.dynamicOpinionPaginations(i + 1),
+						"Clicked on Opinion pagination button " + i + " to verify whether it is a pro contnet or not.");
+				Thread.sleep(2000);
+				GlobalUtil.getDriver()
+						.findElement(By.xpath("//div[@class='owl-item'][" + (i + 1) + "]//a[@class='blog-title']"))
+						.click();
+				KeywordUtil.waitForPageToLoad();
+				boolean hasProIcon = false;
+				if (!GlobalUtil.getDriver().findElements(ProUserLoginLocators.ProIcon).isEmpty())
+					hasProIcon = true;
+				if (hasProIcon)
+				// temp = temp + ":" + i;
+				{
+					KeywordUtil.scrollDown(0, 250);
+					assertEquals(KeywordUtil.getElementText(ProUserLoginLocators.NonProContent),
+							"To view the full content of this article, you have to be a Pro:",
+							"user verified that content showing fully or not");
+					MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.passStringGreenColor(
+							"Link " + i + " has Pro content and is not visible to non-pro user validation"));
+				}
+				GlobalUtil.getDriver().navigate().back();
+				KeywordUtil.waitForPageToLoad();
+				Thread.sleep(4000);
+			}
+
+		} catch (Exception e) {
+			GlobalUtil.e = e;
+			GlobalUtil.ErrorMsg = e.getMessage();
+			Assert.fail(e.getMessage());
+
+		}
+	}
+
+	@Then("^user click on money control pro Logout page$")
+	public void user_click_on_money_control_pro_Logout_page() {
+		KeywordUtil.waitForPageToLoad();
+		KeywordUtil.click(PortfolioLoginPage.GmailLogout, "user cliked on logout button");
+		// DriverUtil.closeAllDriver();
+		GlobalUtil.getDriver().close();
+	}
+
+	@When("^user enter pro user id and password$")
+	public void user_enter_pro_user_id_and_password() {
+
+		KeywordUtil.inputText(ProUserLoginLocators.UserName, GlobalUtil.dataMap.get("MCProUserId"),
+				"user entered pro user id");
+		KeywordUtil.inputText(ProUserLoginLocators.UserPassword, GlobalUtil.dataMap.get("MCProUserPwd"),
+				"user entered pro user password");
+		KeywordUtil.click(ProUserLoginLocators.LoginBtn, "user clicked on login button");
+
+	}
+
+	@When("^User click a link at OPINION tab and verify that Pro users are able to see exclusive Moneycontrol Pro content fully$")
+	public void proContent() throws InterruptedException {
+		/*
+		 * KeywordUtil.click(ProUserLoginLocators.LoginBtn,
+		 * "user clicked on login button");
+		 * assertEquals(KeywordUtil.getElementText(ProUserLoginLocators.
+		 * ProUserPageDisplay), "Hi mclive..",
+		 * "user verified Pro user page is displayed");
+		 * MoneyControlRunner.logger.log(LogStatus.PASS,
+		 * HTMLReportUtil.passStringGreenColor
+		 * ("user verified users are able to see exclusive Moneycontrol Pro content fully"
+		 * ));
+		 */
+		KeywordUtil.delay(3000);
+		KeywordUtil.scrollDown(0, 250);
+		List<WebElement> Elementlist = GlobalUtil.getDriver().findElements(By.xpath(ProUserLoginLocators.OpinionTable));
+		System.out.println("Total elements are : " + Elementlist.size());
+
+		// int count = 0;
+		// String temp = null;
+		for (int i = 0; i < Elementlist.size(); i++) {
+			JavascriptExecutor js = (JavascriptExecutor) GlobalUtil.getDriver();
+			js.executeScript("window.scrollBy(0,-300)");
+			Thread.sleep(3000);
+			KeywordUtil.waitForClickable(ProUserLoginLocators.dynamicOpinionPaginations(i + 1));
+
+			/*
+			 * JavascriptExecutor js = (JavascriptExecutor) GlobalUtil.getDriver();
+			 * js.executeScript("arguments[0].scrollIntoView(true);",
+			 * ProUserLoginLocators.dynamicOpinionPaginations(i + 1));
+			 */
+
+			KeywordUtil.click(ProUserLoginLocators.dynamicOpinionPaginations(i + 1),
+					"Clicked on Opinion pagination button " + i + " to verify whether it is a pro contnet or not.");
+			Thread.sleep(3000);
+			GlobalUtil.getDriver()
+					.findElement(By.xpath("//div[@class='owl-item'][" + (i + 1) + "]//a[@class='blog-title']")).click();
+			KeywordUtil.waitForPageToLoad();
+			if (KeywordUtil.isWebElementPresent(ProUserLoginLocators.NonProContent, "it is a non pro user account")) {
+				MoneyControlRunner.logger.log(LogStatus.PASS,
+						HTMLReportUtil.passStringGreenColor("It is a non pro user account"));
+			} else {
+				MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil
+						.passStringGreenColor("User verified that pro users are able to see fully content"));
+			}
+			GlobalUtil.getDriver().navigate().back();
+			KeywordUtil.waitForPageToLoad();
+			Thread.sleep(4000);
+		}
+	}
+
+	@When("^User is on live TV page in \"([^\"]*)\"$")
+	public void navigateToLiveTVPage(String language) {
+		user_Navigate_Money_Control_page_one();
+		KeywordUtil.click(HomePage.liveTV, "Clicked on live TV link MC home page");
+		if (language.equalsIgnoreCase("Hindi"))
+			KeywordUtil.click(HomePage.hindi, "Selected hindi as language from live TV option.");
+		else if (language.equalsIgnoreCase("Gujarati"))
+			KeywordUtil.click(HomePage.gujarati, "Selected Gujarati as language from live TV option.");
+	}
+
+	@When("^User should watch live TV in \"([^\"]*)\"$")
+	public void validateLiveTVPage(String language) throws SikuliException, Exception {
+		String parentWindow = GlobalUtil.getDriver().getWindowHandle();
+		java.util.Set<String> handles = GlobalUtil.getDriver().getWindowHandles();
+		for (String windowHandle : handles) {
+			if (!windowHandle.equals(parentWindow)) {
+				GlobalUtil.getDriver().switchTo().window(windowHandle);
+			}
+		}
+		if (language.equalsIgnoreCase("Hindi")) {
+
+			if (GlobalUtil.getDriver().findElement(HomePage.hindiImage).getAttribute("src")
+					.contains("mytv_" + language.toLowerCase() + ".jpg"))
+				MoneyControlRunner.logger.log(LogStatus.PASS,
+						HTMLReportUtil.passStringGreenColor("Live TV page header validation for language " + language));
+			else
+				MoneyControlRunner.logger.log(LogStatus.FAIL,
+						HTMLReportUtil.failStringRedColor("Live TV page header validation for language " + language));
+		} else if (language.equalsIgnoreCase("Gujarati")) {
+			KeywordUtil.delay(3000);
+			if (GlobalUtil.getDriver().findElement(HomePage.gujaratiImage).getAttribute("src")
+					.contains("images/" + language.toLowerCase() + "/mytv"))
+				MoneyControlRunner.logger.log(LogStatus.PASS,
+						HTMLReportUtil.passStringGreenColor("Live TV page header validation for language " + language));
+			else
+				MoneyControlRunner.logger.log(LogStatus.FAIL,
+						HTMLReportUtil.failStringRedColor("Live TV page header validation for language " + language));
+		}
+		// KeywordUtil.isWebElementPresent(HomePage.pause, "user able see 'Pause'
+		// button");
+		// KeywordUtil.waitForPageToLoad();
+		/*
+		 * WebElement YT = GlobalUtil.getDriver().findElement(HomePage.youtubeVideo);
+		 * Actions act = new Actions(GlobalUtil.getDriver());
+		 * act.moveToElement(YT).build().perform();
+		 */
+		KeywordUtil.delay(10000);
+		JavascriptExecutor js = (JavascriptExecutor) GlobalUtil.getDriver();
+		js.executeScript("window.scrollBy(0,100)");
+		Screen s = new Screen();
+		KeywordUtil.delay(10000);
+
+		// WebElement
+		// ele=GlobalUtil.getDriver().findElement(By.xpath("//video[@id='myvideo_html5_api']"));
+		WebElement ele = GlobalUtil.getDriver().findElement(By.xpath("//div[@id='vidPlayer']"));
+		if (!ele.isDisplayed()) {
+			GlobalUtil.getDriver().navigate().refresh();
+		}
+		int x = ele.getLocation().getX();
+		int y = ele.getLocation().getY();
+		Thread.sleep(4000);
+
+		Location l = new Location(x + 100, y + 100);
+		Location l1 = new Location(x + 250, y + 250);
+		s.wheel(l, Button.LEFT, 0);
+		KeywordUtil.delay(3000);
+		s.wheel(l1, Button.RIGHT, 0);
+
+		try {
+			assertTrue(GlobalUtil.getDriver().findElement(HomePage.pause).isDisplayed(),
+					"Live TV playing validation for language " + language);
+			MoneyControlRunner.logger.log(LogStatus.PASS,
+					HTMLReportUtil.passStringGreenColor("Live TV playing validation for language " + language));
+		} catch (NoSuchElementException e) {
+			System.out.println("try again");
+			assertTrue(GlobalUtil.getDriver().findElement(HomePage.play).isDisplayed(),
+					"Live TV playing validation for language " + language);
+			MoneyControlRunner.logger.log(LogStatus.PASS,
+					HTMLReportUtil.passStringGreenColor("Live TV playing validation for language " + language));
+
+		}
+		GlobalUtil.getDriver().close();
+	}
+
+	@When("^Check if the user is directed to the Indian Markets page after clicking on Indian Indices$")
+	public void ClickIndianIndices() {
+		KeywordUtil.click(HomePage.markets, "user clicked on <font color=magenta>'Markets'</font> tab");
+		KeywordUtil.waitForPageToLoad();
+		KeywordUtil.delay(10000);
+
+		// KeywordUtil.waitForInVisibile(HomePage.indianIndicesBtn);
+		KeywordUtil.hoverOnElement(HomePage.indianIndicesBtn,
+				"user clicked on <font color=magenta>'Indian Indices'</font>tab");
+		// KeywordUtil.click(HomePage.indianIndicesBtn, "user clicked on 'Indian
+		// Indices' tab");
+	}
+
+	@Then("^Check if user is able to select 'Markets Terminal' and click on 'BSE' tab after landing on Indian Markets page$")
+	public void clickOnMarketTerminlBSETab() {
+		assertEquals(KeywordUtil.getElementText(HomePage.marketTerminalsBtn), "MARKETS TERMINAL",
+				"user able to select market terminal tab");
+		MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil
+				.passStringGreenColor("User able to select <font color='magenta'>'MARKETS TERMINAL'</font> tab"));
+
+		assertEquals(KeywordUtil.getElementText(HomePage.bSEBtn), "BSE", "user able to select BSE tab");
+		MoneyControlRunner.logger.log(LogStatus.PASS,
+				HTMLReportUtil.passStringGreenColor("User able to select <font color='magenta'>'BSE'</font> tab"));
+
+	}
+
+	String[] bSETopFourcompanyNames = new String[4];
+	String[] MCltpValue = new String[4];
+	Float[] MCltpFloatValue = new Float[4];
+	String[] MCchgValue = new String[4];
+	Float[] MCchgFloatValue = new Float[4];
+
+	String[] bseLTPValue = new String[4];
+	Float[] bseLTPFloatValue = new Float[4];
+	String[] bseChangeValue = new String[4];
+	Float[] bseChangeFloatValue = new Float[4];
+
+	Float[] ltpDifference = new Float[4];
+	Float[] chgDifference = new Float[4];
+
+	@Then("^Check if the prices for the top four companies in every indices is having correct value and verify with BSE$")
+	public void verifyTopFourCompaniesWithBSE() {
+		List<WebElement> ele = GlobalUtil.getDriver().findElements(By.xpath("//div[@id='collapse1']//li"));
+		System.out.println("size is : " + ele.size());
+		for (int j = 0; j < ele.size(); j++) {
+			WebElement bSEIndices = GlobalUtil.getDriver()
+					.findElement(By.xpath("//div[@id='collapse1']//li[" + (j + 1) + "]"));
+			JavascriptExecutor js = (JavascriptExecutor) GlobalUtil.getDriver();
+			js.executeScript("arguments[0].scrollIntoView(true);", bSEIndices);
+			bSEIndices.click();
+			String bSEIndicesName = GlobalUtil.getDriver()
+					.findElement(By.xpath("//div[@id='collapse1']//li[" + (j + 1) + "]/a")).getText();
+			System.out.println("get text is :" + bSEIndicesName);
+			MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil
+					.passStringGreenColor("User clikced on :<font color = 'blue'>" + bSEIndicesName + " </font>link"));
+
+			KeywordUtil.delay(2000);
+
+			for (int i = 0; i < 4; i++) {
+				bSETopFourcompanyNames[i] = GlobalUtil.getDriver()
+						.findElement(By.xpath("(//div[@class='indices'])[1]//tbody[2]/tr[" + (i + 1) + "]//a"))
+						.getText();
+				System.out.println("company names : " + bSETopFourcompanyNames[i]);
+
+				MCltpValue[i] = GlobalUtil.getDriver()
+						.findElement(By.xpath("(//div[@class='indices'])[1]//tbody[2]/tr[" + (i + 1) + "]//td[2]/span"))
+						.getText();
+				String MCltpWithoutCommaValue = MCltpValue[i].replaceAll(",", "");
+				MCltpFloatValue[i] = Float.parseFloat(MCltpWithoutCommaValue);
+
+				System.out.println("LTP value is :" + MCltpFloatValue[i]);
+
+				MCchgValue[i] = GlobalUtil.getDriver()
+						.findElement(By.xpath("(//div[@class='indices'])[1]//tbody[2]/tr[" + (i + 1) + "]//td[3]/span"))
+						.getText();
+				if (MCchgValue[i].contains("-")) {
+					MCchgValue[i] = MCchgValue[i].replaceAll("-", "");
+				}
+
+				MCchgFloatValue[i] = Float.parseFloat(MCchgValue[i]);
+				System.out.println("% Change Value is: " + MCchgFloatValue[i]);
+				KeywordUtil.delay(3000);
+
+			}
+			try {
+				KeywordUtil.navigateToUrl(GlobalUtil.dataMap.get("BSEURL"));
+				KeywordUtil.waitForPageToLoad();
+				firstWinHandle = GlobalUtil.getDriver().getWindowHandle();
+			} catch (Throwable e) {
+				GlobalUtil.e = e;
+				GlobalUtil.ErrorMsg = e.getMessage();
+				Assert.fail(e.getMessage());
+			}
+
+			for (int i = 0; i < 4; i++) {
+				KeywordUtil.delay(2000);
+				if (bSETopFourcompanyNames[i].contains("ACC")) {
+					GlobalUtil.getDriver().findElement(HomePage.bseSearchBox).sendKeys("ACC LTD");
+					MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.passStringGreenColor(
+							"User entered <font color='magenta'>ACC LTD </font> in NSE searchbox and get the values"));
+				} else {
+					KeywordUtil.inputText(HomePage.bseSearchBox, bSETopFourcompanyNames[i],
+							"User entered <font color='magenta'>" + bSETopFourcompanyNames[i]
+									+ "</font> in BSE searchbox and get the values");
+				}
+
+				// KeywordUtil.inputText(locator, data, logStep)
+				KeywordUtil.delay(3000);
+				KeywordUtil.pressEnter(HomePage.bseSearchBox);
+				KeywordUtil.waitForPageToLoad();
+				bseLTPValue[i] = KeywordUtil.getElementText(HomePage.bseLTPValue);
+				String bseLTPWithoutCommaValue;
+				if (bseLTPValue[i].contains(",")) {
+					bseLTPWithoutCommaValue = bseLTPValue[i].replaceAll(",", "");
+				} else {
+					bseLTPWithoutCommaValue = bseLTPValue[i];
+				}
+				bseLTPFloatValue[i] = Float.parseFloat(bseLTPWithoutCommaValue);
+				System.out.println("BSE LTP value is :" + bseLTPFloatValue[i]);
+
+				bseChangeValue[i] = KeywordUtil.getElementText(HomePage.bseChangeVlaue).split(" ")[1];
+
+				bseChangeValue[i] = bseChangeValue[i].substring(2, bseChangeValue[i].length() - 2);
+				bseChangeFloatValue[i] = Float.parseFloat(bseChangeValue[i]);
+				System.out.println("BSE percentage change value is :" + bseChangeValue[i]);
+
+				ltpDifference[i] = MCltpFloatValue[i] - bseLTPFloatValue[i];
+				chgDifference[i] = MCchgFloatValue[i] - bseChangeFloatValue[i];
+
+			}
+			for (int i = 0; i < 4; i++) {
+
+				MoneyControlRunner.logger.log(LogStatus.PASS,
+						HTMLReportUtil.passStringGreenColor("MC LTP value of <font color='magenta'>"
+								+ bSETopFourcompanyNames[i] + "</font> is :<font color='magenta'>" + MCltpFloatValue[i]
+								+ "</font> and BSE LTP value of <font color='magenta'>" + bSETopFourcompanyNames[i]
+								+ " </font>is <font color='magenta'>" + bseLTPFloatValue[i]
+								+ "</font> and difference is :<font color='magenta'>" + ltpDifference[i] + "</font>"));
+
+				MoneyControlRunner.logger.log(LogStatus.PASS,
+						HTMLReportUtil.passStringGreenColor("MC percentage change value of <font color='magenta'>"
+								+ bSETopFourcompanyNames[i] + "</font> is :<font color='magenta'>" + MCchgFloatValue[i]
+								+ "</font> and BSE percentage change value of <font color='magenta'>"
+								+ bSETopFourcompanyNames[i] + "</font> is :<font color='magenta'>" + bseChangeValue[i]
+								+ "</font> and difference is : <font color='magenta'>" + chgDifference[i] + "</font>"));
+
+			}
+			GlobalUtil.getDriver().get("https://www.moneycontrol.com/markets/indian-indices/");
+		}
+		GlobalUtil.getDriver().close();
+
+	}
+
+	@Then("^Check if user is able to select 'Markets Terminal' and click on 'NSE' tab after landing on Indian Markets page$")
+	public void clickOnMarketTerminlNSETab() {
+		GlobalUtil.getDriver().get("https://www.moneycontrol.com/markets/indian-indices/");
+		KeywordUtil.waitForPageToLoad();
+		KeywordUtil.delay(3000);
+		assertEquals(KeywordUtil.getElementText(HomePage.marketTerminalsBtn), "MARKETS TERMINAL",
+				"user able to select market terminal tab");
+		assertEquals(KeywordUtil.getElementText(HomePage.nSEBtn), "NSE", "user able to select NSE tab");
+		MoneyControlRunner.logger.log(LogStatus.PASS,
+				HTMLReportUtil.passStringGreenColor("User able to select <font color='magenta'>'NSE'</font> tab"));
+
+		KeywordUtil.click(HomePage.nSEBtn, "user clicked on <font color='magenta'>'NSE'</font> button");
+		KeywordUtil.waitForPageToLoad();
+		KeywordUtil.delay(3000);
+		// KeywordUtil.click(HomePage.nifty50Btn, "user able to click on <font
+		// color='magenta'>'NIFTY 50'</font> link");
+
+	}
+
+	String[] nSETopFourcompanyNames = new String[4];
+	String[] nseLTPValue = new String[4];
+	Float[] nseLTPFloatValue = new Float[4];
+
+	String[] nseChangeValue = new String[4];
+	Float[] nseChangeFloatValue = new Float[4];
+	Float[] ltpDiffValue = new Float[4];
+	Float[] chgDiffValue = new Float[4];
+
+	@Then("^Check if the prices for the top four companies in every indices is having correct value and verify with NSE$")
+	public void verifyTopFourCompaniesWithNSE() {
+		List<WebElement> list = GlobalUtil.getDriver().findElements(By.xpath("//div[@id='collapse2']//li"));
+		for (int j = 1; j < list.size(); j++) {
+			WebElement nSEIndices = GlobalUtil.getDriver()
+					.findElement(By.xpath("//div[@id='collapse2']//li[" + j + "]"));
+			JavascriptExecutor js = (JavascriptExecutor) GlobalUtil.getDriver();
+			js.executeScript("arguments[0].scrollIntoView(true);", nSEIndices);
+			nSEIndices.click();
+
+			String nSEIndicesName = GlobalUtil.getDriver()
+					.findElement(By.xpath("//div[@id='collapse2']//li[" + j + "]/a")).getText();
+			System.out.println("get text is :" + nSEIndicesName);
+			MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil
+					.passStringGreenColor("User clikced on :<font color = 'blue'>" + nSEIndicesName + " </font>link"));
+
+			KeywordUtil.delay(2000);
+			for (int i = 0; i < 4; i++) {
+				if (KeywordUtil.isWebElementPresent1(
+						(By.xpath("(//div[@class='indices'])[1]//tbody[2]/tr[" + (i + 1) + "]//a")),
+						" element is present")) {
+					nSETopFourcompanyNames[i] = GlobalUtil.getDriver()
+							.findElement(By.xpath("(//div[@class='indices'])[1]//tbody[2]/tr[" + (i + 1) + "]//a"))
+							.getText();
+					System.out.println("company names : " + nSETopFourcompanyNames[i]);
+
+					MCltpValue[i] = GlobalUtil.getDriver()
+							.findElement(
+									By.xpath("(//div[@class='indices'])[1]//tbody[2]/tr[" + (i + 1) + "]//td[2]/span"))
+							.getText();
+					String MCltpWithoutCommaValue = MCltpValue[i].replaceAll(",", "");
+					MCltpFloatValue[i] = Float.parseFloat(MCltpWithoutCommaValue);
+					System.out.println("LTP value is :" + MCltpFloatValue[i]);
+
+					MCchgValue[i] = GlobalUtil.getDriver()
+							.findElement(
+									By.xpath("(//div[@class='indices'])[1]//tbody[2]/tr[" + (i + 1) + "]//td[3]/span"))
+							.getText();
+					if (MCchgValue[i].contains("-")) {
+						MCchgValue[i] = MCchgValue[i].replaceAll("-", "");
+					}
+
+					MCchgFloatValue[i] = Float.parseFloat(MCchgValue[i]);
+					System.out.println("% Change Value is: " + MCchgFloatValue[i]);
+					KeywordUtil.delay(3000);
+				}
+			}
+			try {
+				KeywordUtil.navigateToUrl(GlobalUtil.dataMap.get("NSEURL"));
+				KeywordUtil.waitForPageToLoad();
+				firstWinHandle = GlobalUtil.getDriver().getWindowHandle();
+			} catch (Throwable e) {
+				GlobalUtil.e = e;
+				GlobalUtil.ErrorMsg = e.getMessage();
+				Assert.fail(e.getMessage());
+			}
+			for (int i = 0; i < 4; i++) {
+				KeywordUtil.delay(2000);
+				if (nSETopFourcompanyNames[i].contains("AB Capital")) {
+					GlobalUtil.getDriver().findElement(HomePage.nseSearchBox).sendKeys("Aditya Birla Capital");
+					MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.passStringGreenColor(
+							"User entered <font color='magenta'>Aditya Birla Capital </font> in NSE searchbox and get the values"));
+				} else if (nSETopFourcompanyNames[i].contains("DB Corp")) {
+					GlobalUtil.getDriver().findElement(HomePage.nseSearchBox).sendKeys("D.B.Corp Limited");
+					MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.passStringGreenColor(
+							"User entered <font color='magenta'>D.B.Corp Limited</font> in NSE searchbox and get the values"));
+				} else {
+					KeywordUtil.inputText(HomePage.nseSearchBox, nSETopFourcompanyNames[i],
+							"User entered <font color='magenta'>" + nSETopFourcompanyNames[i]
+									+ "</font> in NSE searchbox and get the values");
+				}
+				System.out.println("NSE company name is :" + nSETopFourcompanyNames[i]);
+				KeywordUtil.delay(4000);
+				KeywordUtil.waitForPageToLoad();
+				KeywordUtil.pressEnter(HomePage.nseSearchBox);
+				KeywordUtil.waitForPageToLoad();
+				nseLTPValue[i] = KeywordUtil.getElementText(HomePage.nseLTPValue);
+				String nseLTPWithoutCommaValue;
+				if (nseLTPValue[i].contains(",")) {
+					nseLTPWithoutCommaValue = nseLTPValue[i].replaceAll(",", "");
+				} else {
+					nseLTPWithoutCommaValue = nseLTPValue[i];
+				}
+				nseLTPFloatValue[i] = Float.parseFloat(nseLTPWithoutCommaValue);
+				System.out.println("NSE LTP value is :" + nseLTPFloatValue[i]);
+
+				nseChangeValue[i] = KeywordUtil.getElementText(HomePage.nseChangeValue);
+				if (nseChangeValue[i].contains("-")) {
+					nseChangeValue[i] = nseChangeValue[i].replaceAll("-", "");
+				}
+				System.out.println("nse Change value " + nseChangeValue[i]);
+				// nseChangeValue[i].substring(0, nseChangeValue[i].length()-1);
+				String nseChangeWithoutPrcntValue;
+				if (nseChangeValue[i].contains("%")) {
+					nseChangeValue[i] = nseChangeValue[i].replaceAll("%", "");
+				} else {
+					nseChangeValue[i] = nseChangeValue[i];
+				}
+
+				nseChangeFloatValue[i] = Float.parseFloat(nseChangeValue[i]);
+				System.out.println("NSE change value is : " + nseChangeFloatValue[i]);
+
+				ltpDiffValue[i] = MCltpFloatValue[i] - nseLTPFloatValue[i];
+				chgDiffValue[i] = MCchgFloatValue[i] - nseChangeFloatValue[i];
+
+			}
+			for (int i = 0; i < 4; i++) {
+
+				MoneyControlRunner.logger.log(LogStatus.PASS,
+						HTMLReportUtil.passStringGreenColor("MC LTP value of <font color='magenta'>"
+								+ nSETopFourcompanyNames[i] + "</font> is :<font color='magenta'>" + MCltpFloatValue[i]
+								+ "</font> and NSE LTP value of <font color='magenta'>" + nSETopFourcompanyNames[i]
+								+ "</font> is :<font color='magenta'>" + nseLTPFloatValue[i]
+								+ "</font> and difference is : <font color='magenta'>" + ltpDiffValue[i] + "</font>"));
+
+				MoneyControlRunner.logger.log(LogStatus.PASS,
+						HTMLReportUtil.passStringGreenColor("MC percentage change value of <font color='magenta'>"
+								+ nSETopFourcompanyNames[i] + "</font> is :<font color='magenta'>" + MCchgFloatValue[i]
+								+ "</font> and NSE percentage change value of <font color='magenta'>"
+								+ nSETopFourcompanyNames[i] + "</font> is :<font color='magenta'>"
+								+ nseChangeFloatValue[i] + "</font> and difference is : <font color='magenta'>"
+								+ chgDiffValue[i] + "</font>"));
+
+			}
+			clickOnMarketTerminlNSETab();
+		}
+		GlobalUtil.getDriver().close();
+	}
+
+	@When("^Check if user is able to select 'Live Terminal' and click on 'BSE' tab after landing on Indian Markets page$")
+	public void clickOnLiveTerminalBSETab() {
+		assertEquals(KeywordUtil.getElementText(HomePage.liveMarketsBtn), "LIVE MARKETS",
+				"user able to select market terminal tab");
+		KeywordUtil.click(HomePage.liveMarketsBtn, "User clicked on <font color='magenta'>'Live Terminal'</font> Tab");
+		assertEquals(KeywordUtil.getElementText(HomePage.LMBSEBtn), "BSE", "user able to select BSE tab");
+		MoneyControlRunner.logger.log(LogStatus.PASS,
+				HTMLReportUtil.passStringGreenColor("User able to select <font color='magenta'>'BSE'</font> tab"));
+		KeywordUtil.click(HomePage.LMBSEBtn, "User clicked on <font color='magenta'>'BSE'</font> Tab");
+
+	}
+
+	String[] lMBSEIndicesName;
+	String[] lMBSECurrentValue;
+	String[] lMBSEPrcntgValue;
+
+	@Then("^Check if the prices of LiveMarkets in every indices is having correct value and verify with BSE$")
+	public void verifyTopFourCompaniesOfLiveMarketsIndicesWithBSE() {
+		List<WebElement> list = GlobalUtil.getDriver()
+				.findElements(By.xpath("(//div[@class='indices'])[2]//tbody[2]/tr"));
+		lMBSEIndicesName = new String[list.size()];
+		System.out.println("List size is:" + list.size());
+		KeywordUtil.delay(2000);
+		for (int i = 1; i < list.size(); i++) {
+			WebElement lMtBSEIndices = GlobalUtil.getDriver()
+					.findElement(By.xpath("(//div[@class='indices'])[2]//tbody[2]/tr[" + i + "]/td//a"));
+
+			JavascriptExecutor js = (JavascriptExecutor) GlobalUtil.getDriver();
+			js.executeScript("arguments[0].scrollIntoView(true);", lMtBSEIndices);
+
+			lMBSEIndicesName[i] = GlobalUtil.getDriver()
+					.findElement(By.xpath("(//div[@class='indices'])[2]//tbody[2]/tr[" + i + "]/td//a")).getText();
+			if (lMBSEIndicesName[i].contains("SENSEX")) {
+				lMBSEIndicesName[i] = "S&P BSE SENSEX";
+			}
+			System.out.println("Live market indices value :" + lMBSEIndicesName[i]);
+
+			lMBSECurrentValue = new String[list.size()];
+			lMBSECurrentValue[i] = GlobalUtil.getDriver()
+					.findElement(By.xpath("(//div[@class='indices'])[2]//tbody[2]/tr[" + i + "]/td[2]")).getText()
+					.replace(",", "");
+			System.out.println("Live markets indices current value is :" + lMBSECurrentValue[i]);
+
+			lMBSEPrcntgValue = new String[list.size()];
+			lMBSEPrcntgValue[i] = GlobalUtil.getDriver()
+					.findElement(By.xpath("(//div[@class='indices'])[2]//tbody[2]/tr[" + i + "]/td[4]")).getText()
+					.replace("-", "");
+			System.out.println("Live markets % change value is :" + lMBSEPrcntgValue[i]);
+			KeywordUtil.delay(2000);
+
+		}
+		/*
+		 * Bse bse = new Bse(); Nse nse = new Nse();
+		 */
+
+		try {
+			KeywordUtil.navigateToUrl(GlobalUtil.dataMap.get("BSEURL"));
+			KeywordUtil.waitForPageToLoad();
+			firstWinHandle = GlobalUtil.getDriver().getWindowHandle();
+
+		} catch (Throwable e) {
+			GlobalUtil.e = e;
+			GlobalUtil.ErrorMsg = e.getMessage();
+			Assert.fail(e.getMessage());
+		}
+		KeywordUtil.delay(3000);
+		// KeywordUtil.scrollIntoView(HomePage.bSEMoreBtn);
+		JavascriptExecutor js = (JavascriptExecutor) GlobalUtil.getDriver();
+
+		js.executeScript("window.scrollBy(0,450)");
+		KeywordUtil.delay(3000);
+		KeywordUtil.clickJS(HomePage.bSEMoreBtn, "user clicked on 'More Icon' of BSE Indices");
+		js.executeScript("window.scrollBy(0,300)");
+		bSEDropdownCatogery();
+		bSEAndMCValidations();
+		for (int i = 2; i <=5; i++) {
+			KeywordUtil.delay(4000);
+			js.executeScript("window.scrollBy(0,-300)");
+			KeywordUtil.selectByValue(HomePage.categoryDropDown, "" + i + ",2", "user selected 'Sector & Index'");
+			js.executeScript("window.scrollBy(0,300)");
+			bSEDropdownCatogery();
+			bSEAndMCValidations();
+		}
+
+	}
+
+	String[] bSEIndices;
+	String[] bSECurrentValue;
+	String[] bSEPchgValue;
+
+	public void bSEDropdownCatogery() {
+		KeywordUtil.delay(2000);
+		List<WebElement> list1 = GlobalUtil.getDriver()
+				.findElements(By.xpath("(//table[@id='tblinsidertrd'])[1]/tbody/tr"));
+		System.out.println("List1 size is :" + list1.size());
+		bSEIndices = new String[list1.size()];
+		bSECurrentValue = new String[list1.size()];
+		bSEPchgValue = new String[list1.size()];
+
+		for (int i = 1; i < list1.size(); i++) {
+
+			// KeywordUtil.scrollIntoView(By.xpath("(//table[@id='tblinsidertrd'])[1]/tbody/tr["
+			// + i + "]/td/a"));
+			WebElement ele = GlobalUtil.getDriver()
+					.findElement(By.xpath("(//table[@id='tblinsidertrd'])[1]/tbody/tr[" + i + "]/td/a"));
+			KeywordUtil.scrollIntoView(ele);
+			bSEIndices[i] = GlobalUtil.getDriver()
+					.findElement(By.xpath("(//table[@id='tblinsidertrd'])[1]/tbody/tr[" + i + "]/td/a")).getText();
+			System.out.println("Indices selected from Market Cap/Broad is :" + bSEIndices[i]);
+			KeywordUtil.delay(1000);
+			bSECurrentValue[i] = GlobalUtil.getDriver()
+					.findElement(By.xpath("(//table[@id='tblinsidertrd'])[1]/tbody/tr[" + i + "]/td[5]")).getText()
+					.replaceAll(",", "");
+			System.out.println("Current value is :" + bSECurrentValue[i]);
+
+			String bSEPchgValue1 = GlobalUtil.getDriver()
+					.findElement(By.xpath("(//table[@id='tblinsidertrd'])[1]/tbody/tr[" + i + "]/td[8]")).getText();
+			// bSEPchgValue[i] = bSEPchgValue1.substring(1, bSEPchgValue1.length());
+			if(bSEPchgValue1.contains("-")) {
+			bSEPchgValue[i] = bSEPchgValue1.replaceAll("-", "");
+			}else
+			{
+				bSEPchgValue[i] = bSEPchgValue1;
+			}
+			System.out.println("Percentage Change value is :" + bSEPchgValue[i]);
+			KeywordUtil.delay(500);
+
+		}
+	}
+
+	public void bSEAndMCValidations() {
+
+		for (int i = 0; i < bSECurrentValue.length; i++) {
+			float currentValueDiff = Float.parseFloat(lMBSECurrentValue[i]) - Float.parseFloat(bSECurrentValue[i]);
+
+			MoneyControlRunner.logger.log(LogStatus.PASS,
+					HTMLReportUtil.passStringGreenColor(
+							"MoneyControl LiveMarkets BSE current value is :<font color='magenta'>" + lMBSECurrentValue
+									+ "</font> and BSE Current value is :<font color='magenta'>" + bSECurrentValue
+									+ "</font> and difference is :" + currentValueDiff));
+
+		}
+	}
+
+	@When("^Check if user is able to select 'Live Terminal' and click on 'NSE' tab after landing on Indian Markets page$")
+	public void clickOnLiveTerminalNSETab() {
+		assertEquals(KeywordUtil.getElementText(HomePage.liveMarketsBtn), "LIVE MARKETS",
+				"user able to select market terminal tab");
+		KeywordUtil.click(HomePage.liveMarketsBtn, "User clicked on <font color='magenta'>'Live Terminal'</font> Tab");
+		assertEquals(KeywordUtil.getElementText(HomePage.lMNSEBtn), "NSE", "user able to select NSE tab");
+		MoneyControlRunner.logger.log(LogStatus.PASS,
+				HTMLReportUtil.passStringGreenColor("User able to select <font color='magenta'>'NSE'</font> tab"));
+		KeywordUtil.click(HomePage.lMNSEBtn, "User clicked on <font color='magenta'>'NSE'</font> Tab");
+
+	}
+
+	String[] lMNSEIndicesName;
+	String[] lMNSECurrentValue;
+	String[] lMNSEPrcntgValue;
+
+	@Then("^Check if the prices of LiveMarkets in every indices is having correct value and verify with NSE$")
+	public void verifyTopFourCompaniesOfLiveMarketsIndicesWithNSE() {
+		List<WebElement> list2 = GlobalUtil.getDriver()
+				.findElements(By.xpath("(//div[@class='indices'])[3]//tbody[2]/tr"));
+		System.out.println("NSE indices size is :" + list2.size());
+		for (int i = 1; i < list2.size(); i++) {
+
+			WebElement lMNSEIndices = GlobalUtil.getDriver()
+					.findElement(By.xpath("(//div[@class='indices'])[3]//tbody[2]/tr[" + i + "]/td//a"));
+
+			JavascriptExecutor js = (JavascriptExecutor) GlobalUtil.getDriver();
+			js.executeScript("arguments[0].scrollIntoView(true);", lMNSEIndices);
+
+			lMNSEIndicesName = new String[list2.size()];
+			lMNSEIndicesName[i] = GlobalUtil.getDriver()
+					.findElement(By.xpath("(//div[@class='indices'])[3]//tbody[2]/tr[" + i + "]/td//a")).getText();
+			System.out.println("Live Markets NSE indices name :" + lMNSEIndicesName[i]);
+
+			lMNSECurrentValue = new String[list2.size()];
+			lMNSECurrentValue[i] = GlobalUtil.getDriver()
+					.findElement(By.xpath("(//div[@class='indices'])[3]//tbody[2]/tr[" + i + "]/td[2]/span")).getText();
+			System.out.println("Live markets NSE current value : " + lMNSECurrentValue[i]);
+
+			lMNSEPrcntgValue = new String[list2.size()];
+			lMNSEPrcntgValue[i] = GlobalUtil.getDriver()
+					.findElement(By.xpath("(//div[@class='indices'])[3]//tbody[2]/tr[" + i + "]/td[4]/span")).getText();
+			System.out.println("Live markets NSE percentage value :" + lMNSEPrcntgValue[i]);
+		}
+		GlobalUtil.getDriver().close();
+
+	}
+
+	@Then("^user is on Global Market page$")
+	public void globalMarket() {
+		KeywordUtil.click(HomePage.market, "Selected marketTab option");
+		KeywordUtil.delay(6000);
+		KeywordUtil.click(HomePage.globalmarket, "Selected global marketTab option");
+		KeywordUtil.delay(5000);
+		assertTrue(GlobalUtil.getDriver().findElement(HomePage.globalIndices).isDisplayed(),
+				"User land on the Global Markets page validation");
+		MoneyControlRunner.logger.log(LogStatus.PASS,
+				HTMLReportUtil.passStringGreenColor("User land on the Global Markets page validation"));
+	}
+
+	String nasdaqIndexName = "";
+	String marketdate1 = "";
+	String[] market2 = new String[3];
+	String marketdate2 = "";
+	String[] market3 = new String[9];
+	String marketdate3 = "";
+	String title1 = "";
+	String title2 = "";
+	String title3 = "";
+	String nasdaqCurrentValue1 = "";
+	String investingdotcom = "";
+	String[] mcGlobalStockNames;
+	String[] currentValue2 = new String[3];
+	String[] currentValue3 = new String[9];
+	String nasdaqCurrentPercentage1 = "";
+	String[] currentPercentage2 = new String[3];
+	String[] currentPercentage3 = new String[9];
+	String investingdotcomNASDAQcurrentValue1 = "";
+	String investingdotcomNASDAQPercentageValue1 = "";
+	String investingdotcomFTSEcurrentValue2 = "";
+	String investingdotcomFTSEPercentageValue2 = "";
+	String[] InvestingIndexNames = new String[47];
+	String[] InvestingcurrentValue = new String[50];
+	String[] InvestingPercentageValue = new String[50];
+
+	@Then("^user checks all the Global Indices under 'US Markets', 'European Markets', 'Asian Markets' respectively$")
+	public void user_checks_all_the_Global_Indices_under_US_Markets_European_Markets_Asian_Markets_respectively() {
+		System.out.println();
+		title1 = GlobalUtil.getDriver()
+				.findElement(
+						By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr[1]"))
+				.getText();
+		System.out.println("Title is\t\t :" + title1);
+		nasdaqIndexName = GlobalUtil.getDriver()
+				.findElement(By
+						.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr[2]/td/a"))
+				.getText().split("\\(")[0];
+		System.out.println("Market is\t\t :" + nasdaqIndexName);
+
+		MoneyControlRunner.logger.log(LogStatus.INFO, HTMLReportUtil.passStringGreenColor(
+				"<font color='magenta'>" + nasdaqIndexName + "</font> is dispalyed for <b>US markets</b>"));
+		System.out.println();
+
+		title2 = GlobalUtil.getDriver()
+				.findElement(
+						By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr[3]"))
+				.getText();
+		System.out.println("Title is\t\t :" + title2);
+		for (int i = 0; i < 3; i++) {
+			market2[i] = GlobalUtil.getDriver()
+					.findElement(
+							By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr["
+									+ (i + 4) + "]/td/a"))
+					.getText().split("\\(")[0];
+			System.out.println("Market is\t\t :" + market2[i]);
+
+			MoneyControlRunner.logger.log(LogStatus.INFO, HTMLReportUtil.passStringGreenColor(
+					"<font color='magenta'>" + market2[i] + "</font> is dispalyed for <b>European markets</b>"));
+			System.out.println();
+		}
+		title3 = GlobalUtil.getDriver()
+				.findElement(
+						By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr[7]"))
+				.getText();
+		System.out.println("Title is\t\t :" + title3);
+		for (int j = 0; j < 9; j++) {
+			market3[j] = GlobalUtil.getDriver()
+					.findElement(
+							By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr["
+									+ (j + 8) + "]/td/a"))
+					.getText().split("\\(")[0];
+			System.out.println("Market is\t\t :" + market3[j]);
+			MoneyControlRunner.logger.log(LogStatus.INFO, HTMLReportUtil.passStringGreenColor(
+					"<font color='magenta'>" + market3[j] + "</font> is dispalyed for <b>Asian markets</b>"));
+			System.out.println();
+		}
+
+	}
+
+	@And("^User Check values displayed for the Global Indices are correct$")
+	public void globalIndicesValues() {
+		System.out.println();
+		title1 = GlobalUtil.getDriver()
+				.findElement(
+						By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr[1]"))
+				.getText();
+		System.out.println("Title is\t\t\t :" + title1);
+		nasdaqIndexName = GlobalUtil.getDriver()
+				.findElement(By
+						.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr[2]/td/a"))
+				.getText().split("\\(")[0];
+		System.out.println("Market is\t\t\t :" + nasdaqIndexName);
+		nasdaqCurrentValue1 = GlobalUtil.getDriver()
+				.findElement(By
+						.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr[2]/td[2]"))
+				.getText();
+		System.out.println("Current Value is\t\t :" + nasdaqCurrentValue1);
+		nasdaqCurrentPercentage1 = GlobalUtil.getDriver()
+				.findElement(By
+						.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr[2]/td[4]"))
+				.getText();
+		System.out.println("Current Percentage is\t\t :" + nasdaqCurrentPercentage1);
+
+		System.out.println();
+
+		title2 = GlobalUtil.getDriver()
+				.findElement(
+						By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr[3]"))
+				.getText();
+		System.out.println("Title is\t\t\t :" + title2);
+		for (int i = 0; i < 3; i++) {
+			market2[i] = GlobalUtil.getDriver()
+					.findElement(
+							By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr["
+									+ (i + 4) + "]/td/a"))
+					.getText().split("\\(")[0];
+			System.out.println("Market is\t\t\t :" + market2[i]);
+			currentValue2[i] = GlobalUtil.getDriver()
+					.findElement(
+							By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr["
+									+ (i + 4) + "]/td[2]/div"))
+					.getText();
+			System.out.println("Current Value is\t\t :" + currentValue2[i]);
+			currentPercentage2[i] = GlobalUtil.getDriver()
+					.findElement(
+							By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr["
+									+ (i + 4) + "]/td[4]"))
+					.getText();
+			System.out.println("Current Percentage is\t\t :" + currentPercentage2[i]);
+
+			System.out.println();
+		}
+		title3 = GlobalUtil.getDriver()
+				.findElement(
+						By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr[7]"))
+				.getText();
+		System.out.println("Title is\t\t\t :" + title3);
+		for (int j = 0; j <= 8; j++) {
+
+			market3[j] = GlobalUtil.getDriver()
+					.findElement(
+							By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr["
+									+ (j + 8) + "]/td/a"))
+					.getText().split("\\(")[0];
+			System.out.println("Market is\t\t\t :" + market3[j]);
+			currentValue3[j] = GlobalUtil.getDriver()
+					.findElement(
+							By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr["
+									+ (j + 8) + "]/td[2]"))
+					.getText();
+			System.out.println("Current Value is\t\t :" + currentValue3[j]);
+			currentPercentage3[j] = GlobalUtil.getDriver()
+					.findElement(
+							By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr["
+									+ (j + 8) + "]/td[4]"))
+					.getText();
+			System.out.println("Current Percentage is\t\t :" + currentPercentage3[j]);
+
+			System.out.println();
+
+			System.out.println();
+		}
+
+		GlobalUtil.getDriver().get("https://www.investing.com/indices/major-indices");
+
+		List<WebElement> listName = GlobalUtil.getDriver()
+				.findElements(By.xpath("//table[@class='genTbl closedTbl elpTbl elp20 crossRatesTbl']/tbody/tr"));
+		for (int i = 0; i < listName.size(); i++) {
+
+			InvestingIndexNames[i] = GlobalUtil.getDriver()
+					.findElement(By.xpath("//div[@id='cross_rates_container']//tbody/tr[" + (i + 1) + "]/td[2]"))
+					.getText();
+			System.out.println("Investing.com Stocks Name is\t\t :" + InvestingIndexNames[i]);
+
+		}
+		System.out.println();
+		List<WebElement> list = GlobalUtil.getDriver()
+				.findElements(By.xpath("//div[@id='cross_rates_container']//tbody/tr/td[3]"));
+		for (int i = 0; i < list.size(); i++) {
+
+			InvestingcurrentValue[i] = GlobalUtil.getDriver()
+					.findElement(By.xpath("//div[@id='cross_rates_container']//tbody/tr[" + (i + 1) + "]/td[3]"))
+					.getText();
+			System.out.println("Investing.com Current Value is\t\t :" + InvestingcurrentValue[i]);
+
+		}
+		System.out.println();
+		List<WebElement> listPercentage = GlobalUtil.getDriver()
+				.findElements(By.xpath("//div[@id='cross_rates_container']//tbody/tr/td[7]"));
+		for (int i = 0; i < listPercentage.size(); i++) {
+
+			InvestingPercentageValue[i] = GlobalUtil.getDriver()
+					.findElement(By.xpath("//div[@id='cross_rates_container']//tbody/tr[" + (i + 1) + "]/td[7]"))
+					.getText();
+
+			InvestingPercentageValue[i] = InvestingPercentageValue[i].substring(1,
+					InvestingPercentageValue[i].length() - 1);
+			System.out.println("Investing.com Percentage Value is\t :" + InvestingPercentageValue[i]);
+
+		}
+
+		for (int i = 1; i < listName.size(); i++)
+			if (InvestingIndexNames[i].contains("Nasdaq")) {
+				int num = i;
+				System.out.println(num); // System.out.println("investing");
+
+				nasdaqCurrentValue1 = nasdaqCurrentValue1.replace(",", "");
+				System.out.println(nasdaqCurrentValue1);
+				InvestingcurrentValue[num] = InvestingcurrentValue[num].replace(",", "");
+				System.out.println(InvestingcurrentValue[num]);
+				float diffNasdaq = Float.parseFloat(nasdaqCurrentValue1) - Float.parseFloat(InvestingcurrentValue[num]);
+				System.out.println("Nasdaq difference value is " + diffNasdaq);
+				MoneyControlRunner.logger.log(LogStatus.PASS,
+						HTMLReportUtil.passStringGreenColor("MC NASADQ current value : <font color='magenta'>"
+								+ nasdaqCurrentValue1
+								+ "</font>, Investing.com NASDAQ current value : <font color='magenta'>"
+								+ InvestingcurrentValue[num] + "</font> and difference is : <font color='magenta'>"
+								+ diffNasdaq + "</font>"));
+
+			}
+
+		for (int j = 0; j < 3; j++) {
+			if (market2[j].toLowerCase().equals("ftse ")) {
+				market2[j] = market2[j] + "100";
+
+			}
+			if (market2[j].toLowerCase().equals("cac ")) {
+				market2[j] = market2[j] + "40";
+
+			}
+			for (int i = 0; i < listName.size(); i++) {
+				// System.out.println("market2j is "+InvestingIndexNames[i]);
+				// System.out.println("market2j is "+market2[j]);
+				// System.out.println();
+				if (market2[j].contains(InvestingIndexNames[i])) {
+					int num = i;
+					System.out.println(num);
+					// System.out.println("investing");
+
+					currentValue2[j] = currentValue2[j].replace(",", "");
+					System.out.println(currentValue2[j]);
+
+					InvestingcurrentValue[num] = InvestingcurrentValue[num].replace(",", "");
+					System.out.println(InvestingcurrentValue[num]);
+
+					float Difference = Float.parseFloat(currentValue2[j])
+							- Float.parseFloat(InvestingcurrentValue[num]);
+					System.out.println("GlobalMarket and investing.com  difference value is " + Difference);
+					MoneyControlRunner.logger.log(LogStatus.PASS,
+							HTMLReportUtil.passStringGreenColor("MC " + market2[j]
+									+ " current value :<font color='magenta'>" + currentValue2[j]
+									+ "</font>, Investing.com " + InvestingIndexNames[i]
+									+ " current value  :<font color='magenta'>" + InvestingcurrentValue[num]
+									+ "</font> and difference is :<font color='magenta'>" + Difference + "</font>"));
+
+				}
+			}
+
+		}
+
+		for (int j = 0; j < 9; j++) {
+
+			for (int i = 0; i < listName.size(); i++) {
+
+				if (market3[j].toLowerCase().contains(InvestingIndexNames[i].toLowerCase()))
+
+				{
+					int num = i;
+					System.out.println(num);
+
+					currentValue3[j] = currentValue3[j].replace(",", "");
+					System.out.println(currentValue3[j]);
+
+					InvestingcurrentValue[num] = InvestingcurrentValue[num].replace(",", "");
+					System.out.println(InvestingcurrentValue[num]);
+
+					float Difference = Float.parseFloat(currentValue3[j])
+							- Float.parseFloat(InvestingcurrentValue[num]);
+					System.out.println("GlobalMarket and investing.com  difference value is " + Difference);
+					MoneyControlRunner.logger.log(LogStatus.PASS,
+							HTMLReportUtil.passStringGreenColor("MC Global " + market3[j]
+									+ " current value :<font color='magenta'>" + currentValue3[j]
+									+ "</font>, Investing.com " + InvestingIndexNames[i]
+									+ " current value is :<font color='magenta'>" + InvestingcurrentValue[num]
+									+ "</font> and difference is :<font color='magenta'>" + Difference + "</font>"));
+
+				}
+			}
+		}
+
+		for (int i = 1; i < listName.size(); i++)
+			if (InvestingIndexNames[i].contains("Nasdaq")) {
+				int num = i;
+				System.out.println(num);
+				// System.out.println("investing");
+
+				// nasdaqCurrentValue1 = nasdaqCurrentValue1.replace(",", "");
+				System.out.println(nasdaqCurrentPercentage1);
+				// InvestingcurrentValue[num] =
+				// InvestingcurrentValue[num].replace(",", "");
+				System.out.println(InvestingPercentageValue[num]);
+				float PercentagediffNasdaq = Float.parseFloat(nasdaqCurrentPercentage1)
+						- Float.parseFloat(InvestingPercentageValue[num]);
+				System.out.println("Nasdaq Percentage Difference value is " + PercentagediffNasdaq);
+				MoneyControlRunner.logger.log(LogStatus.PASS,
+						HTMLReportUtil.passStringGreenColor(
+								"MC NASADQ current value : <font color='magenta'>" + nasdaqCurrentPercentage1
+										+ "</font>, Investing.com NASDAQ current value : <font color='magenta'>"
+										+ InvestingPercentageValue[num]
+										+ "</font> and  Percentage difference is : <font color='magenta'>"
+										+ PercentagediffNasdaq + "%</font>"));
+
+			}
+
+		for (int j = 0; j < 3; j++) {
+			if (market2[j].toLowerCase().equals("ftse ")) {
+				market2[j] = market2[j] + "100";
+
+			}
+			if (market2[j].toLowerCase().equals("cac ")) {
+				market2[j] = market2[j] + "40";
+
+			}
+			for (int i = 0; i < listName.size(); i++) {
+				// System.out.println("market2j is "+InvestingIndexNames[i]);
+				// System.out.println("market2j is "+market2[j]);
+				// System.out.println();
+				if (market2[j].contains(InvestingIndexNames[i])) {
+					int num = i;
+					System.out.println(num);
+					// System.out.println("investing");
+
+					// currentValue2[j] = currentValue2[j].replace(",", "");
+					System.out.println(currentPercentage2[j]);
+
+					// InvestingcurrentValue[num] =
+					// InvestingcurrentValue[num].replace(",", "");
+					System.out.println(InvestingcurrentValue[num]);
+
+					float PercentageDifference = Float.parseFloat(currentPercentage2[j])
+							- Float.parseFloat(InvestingPercentageValue[num]);
+					System.out.println(
+							"GlobalMarket and investing.com  Percentage Difference value is " + PercentageDifference);
+					MoneyControlRunner.logger.log(LogStatus.PASS,
+							HTMLReportUtil
+									.passStringGreenColor("MC " + market2[j] + " current value :<font color='magenta'>"
+											+ currentPercentage2[j] + "</font>, Investing.com " + InvestingIndexNames[i]
+											+ " current value  :<font color='magenta'>" + InvestingPercentageValue[num]
+											+ "</font> and Percentage difference is :<font color='magenta'>"
+											+ PercentageDifference + "%</font>"));
+
+				}
+			}
+
+		}
+
+		for (int j = 0; j < 9; j++) {
+
+			for (int i = 0; i < listName.size(); i++) {
+
+				if (market3[j].toLowerCase().contains(InvestingIndexNames[i].toLowerCase()))
+
+				{
+					int num = i;
+					System.out.println(num);
+
+					// currentValue3[j] = currentValue3[j].replace(",", "");
+					// System.out.println(currentValue3[j]);
+
+					// InvestingcurrentValue[num] =
+					// InvestingcurrentValue[num].replace(",", "");
+					System.out.println(InvestingcurrentValue[num]);
+
+					float PercentageDifference = Float.parseFloat(currentPercentage3[j])
+							- Float.parseFloat(InvestingPercentageValue[num]);
+					System.out.println(
+							"GlobalMarket and investing.com  Percentage Difference value is " + PercentageDifference);
+					MoneyControlRunner.logger.log(LogStatus.PASS, HTMLReportUtil.passStringGreenColor("MC Global "
+							+ market3[j] + " current value :<font color='magenta'>" + currentPercentage3[j]
+							+ "</font>, Investing.com " + InvestingIndexNames[i]
+							+ " current value is :<font color='magenta'>" + InvestingPercentageValue[num]
+							+ "</font> and difference is :<font color='magenta'>" + PercentageDifference + "%</font>"));
+
+				}
+			}
+		}
+
+	}
+
+	@And("^User get the correct date for different indices of global market$")
+	public void globalMarketDate() {
+		System.out.println();
+		title1 = GlobalUtil.getDriver()
+				.findElement(
+						By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr[1]"))
+				.getText();
+		System.out.println("Title is\t\t :" + title1);
+		nasdaqIndexName = GlobalUtil.getDriver()
+				.findElement(By
+						.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr[2]/td/a"))
+				.getText().split("\\(")[0];
+		System.out.println("Market is\t\t :" + nasdaqIndexName);
+		marketdate1 = GlobalUtil.getDriver()
+				.findElement(By
+						.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr[2]//span"))
+				.getText();
+		System.out.println("Date is\t\t\t :" + marketdate1);
+		MoneyControlRunner.logger.log(LogStatus.INFO, HTMLReportUtil.passStringGreenColor("<font color='magenta'>"
+				+ marketdate1 + "</font> date is dispalyed for <b>" + nasdaqIndexName + "</b>"));
+		System.out.println();
+
+		title2 = GlobalUtil.getDriver()
+				.findElement(
+						By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr[3]"))
+				.getText();
+		System.out.println("Title is\t\t :" + title2);
+		for (int i = 0; i < 3; i++) {
+			market2[i] = GlobalUtil.getDriver()
+					.findElement(
+							By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr["
+									+ (i + 4) + "]/td/a"))
+					.getText().split("\\(")[0];
+			System.out.println("Market is\t\t :" + market2[i]);
+			marketdate2 = GlobalUtil.getDriver()
+					.findElement(
+							By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr["
+									+ (i + 4) + "]//span"))
+					.getText();
+			System.out.println("Date is\t\t\t :" + marketdate2);
+			MoneyControlRunner.logger.log(LogStatus.INFO, HTMLReportUtil.passStringGreenColor("<font color='magenta'>"
+					+ marketdate2 + "</font> date is dispalyed for <b>" + market2[i] + "</b>"));
+			System.out.println();
+		}
+		title3 = GlobalUtil.getDriver()
+				.findElement(
+						By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr[7]"))
+				.getText();
+		System.out.println("Title is\t\t :" + title3);
+		for (int j = 0; j <= 8; j++) {
+			market3[j] = GlobalUtil.getDriver()
+					.findElement(
+							By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr["
+									+ (j + 8) + "]/td/a"))
+					.getText().split("\\(")[0];
+			System.out.println("Market is\t\t :" + market3[j]);
+			marketdate3 = GlobalUtil.getDriver()
+					.findElement(
+							By.xpath("//table[@class='mctable1 n18_res_table responsive tbl_scroll_resp']/tbody/tr["
+									+ (j + 8) + "]//span"))
+					.getText();
+			System.out.println("Date is\t\t\t :" + marketdate3);
+			MoneyControlRunner.logger.log(LogStatus.INFO, HTMLReportUtil.passStringGreenColor("<font color='magenta'>"
+					+ marketdate3 + "</font> date is dispalyed for <b>" + market3[j] + "</b>"));
+			System.out.println();
+		}
+
+	}
+
+}

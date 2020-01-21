@@ -1,0 +1,91 @@
+package mcAndroidWebPages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
+public class MoneyControlLocators {
+	public static final String type_xpath = "xPath";
+	public static final String type_name = "name";
+	public static final String type_id = "id";
+	public static final String type_class = "classname";
+
+	
+	/*****************************Login via Facebook************************************/
+	public static String UserIcon=	"//div[@class='icon-user']";
+	public static String Login="//a[@title='Login']";
+	public static String LoginWithFacebookbtn = "//a[@id='ACCT_FB_LOGIN']";
+	public static By FBUsername =By.xpath("//input[@id='m_login_email']");
+	public static By FBPassword = By.xpath("//input[@id='m_login_password']");
+	public static String FBLoginBtn= "//button[@id='u_0_5']";
+	public static String signOutBtn="//a[text()='Sign out']";
+
+
+
+/*****************************Login via Google************************************/
+public static String LoginWithGoogle = "//a[@id='ACCT_GPLUS_LOGIN']";
+public static By GoogleEmail=By.xpath("//input[@id='identifierId']");
+public static String GoogleEmailNextbutton="//div[@id='identifierNext']";
+public static By GooglePassword=By.xpath("//input[@name='password']");
+public static String GooglepasswordNextbutton="//div[@id='passwordNext']";
+
+/*****************************Login via Email************************************/
+public static By UserID=By.xpath("//div[@class='textfieldbox PR']/input[@id='email']");
+public static By password=By.xpath("//div[@class='textfieldbox PR'][2]/input[@id='pwd']");
+
+public static String LOGIN="//div[@class='float-label'][1]//button[text()='Login']";
+public static String EmailProfileIcon="//a[@id='useric']";
+public static By useOTPLnk = By.xpath("//a[@id='USE_OTP_BTN']");
+		//button[@id='ACCT_LOGIN_SUBMIT']
+
+/*****************************NonproUser ************************************/
+public static String Addtransaction="//input[@class='add_transctn']";
+public static By StockName=By.xpath("(//input[@name='txt_asset[]'])[1]");
+public static String StockName1="(//input[@name='txt_asset[]'])[1]";
+public static String Selected_stock="//li/a[contains(text(),'Infosys')]";
+public static String Selected_stock1="//li/a[contains(text(),'Wipro')]";
+public static String Selected_stock2="//li/a[contains(text(),'BHEL')]";
+
+	//div[@class='PR has-error']/input[@name='txt_asset[]']");
+public static By Quantity=By.xpath("(//input[@name='txt_qty[]'])[1]");
+
+public static By Stock_price=By.xpath("(//input[@name='txt_amount[]'])[1]");
+public static String Addtransaction_Btn="//a[text()='Add Transaction ']";
+public static By Instrument_type=By.xpath("(//input[@name='hdn_asset_id[]'])[1]");
+public static String Amount1="(//input[@name='txt_amount[]'])[1]";
+public static By Amount=By.xpath("(//input[@name='txt_amount[]'])[1]");
+public static String dashboardLink = "//a[contains(@href,'portfolio-investment-dashboard')][text()='Dashboard']";
+public static By dashboardTable = By.xpath("//table[contains(@class,'stktable table-striped footable')]/tbody/tr");
+public static By myNetworthValue = By.xpath("//div[@class='stkdsBx first clearfix']/div[@class='stk_val']");
+public static By myAssetsValue = By.xpath("//div[@class='stkdsBx clearfix']/div[@class='stk_val']");
+public static By myLiabilities = By.xpath("//div[@class='stkdsBx clearfix last']/div[@class='stk_val']");
+public static By stockLatestValue = By.xpath("(//table[contains(@class,'stktable table-striped footable')]/tbody//td[@class='footable-last-visible'])[1]");
+public static By otherBarrowingsValue = By.xpath("(//table[contains(@class,'stktable table-striped footable')]/tbody//td[@class='footable-last-visible'])[9]");
+public static String mutualFunds="//a[contains(@href,'portfolio-investment-transaction/mutualfund') and text()='Mutual Fund']";
+public static By scheme = By.xpath("(//div[@class='clearfix']//input[@name='txt_asset[]'])[1]");
+public static By nav = By.xpath("(//div[@class='clearfix']//input[@name='txt_amount[]'])[1]");
+public static By mFAmount = By.xpath("(//input[@name='txt_transaction_amount[]'])[1]");
+public static String Selectedscheme1 = "//a[text()='SBI Blue Chip Fund (G)']";
+public static By Selectedscheme3 = By.xpath("//a[text()='SBI Blue Chip Fund (G)']");
+public static String Selectedscheme2 = "//a[text()='HDFC Prudence Fund (D)']";
+public static By Selectedscheme4 = By.xpath("//a[text()='HDFC Prudence Fund (D)']");
+
+
+/**************************Verify New Email for Port_folio version*********************************/
+public static By Email_Text = By.xpath("//form[@id='login_form']//input[@id='email']");
+public static By Password_Text=By.xpath("//*[@id='login_form']//input[@id='pwd']");
+public static By Login_Button= By.xpath("//*[@id='ACCT_LOGIN_SUBMIT']");
+public static By Dashboard =By.xpath("//nav//a[contains(@href,'dashboard') and text()='Dashboard']");
+public static By Portfolio= By.xpath("*//tbody/tr/td[contains(text(),'PORTFOLIO')]");
+
+/******************WatchList Add Stock**********************************/
+  public static String MenuTab = "//a[@id='menubx']";
+  public static String WatchListBtn = "//div[@class='menutable']/a[text()='Watchlist']";
+  public static String WatchListSearchBox = "//input[@id='srchtxt']";
+  public static String WatchList_suggested_stock_Infosys = "(//strong[text()='INFOSYS'])[1]";
+  public static String WatchList_suggested_stock_wipro = "(//strong[text()='WIPRO'])[1]";
+  public static String WatchList_suggested_stock_tcs = "(//strong[text()='TCS'])[1]";
+  public static String WatchListSearchBtn = "//form[@name='suggestfrm']/input[3]";
+  public static String WatchListAddBtn = "//td[@class='PL5 PR5']//td/a[@href='addBulkWatchlist.php?chk_watch[]=IT&cmdSub=1&s_type=1']";
+  public static String WatchListStockTableData="//tbody/tr[4]//table[@class='prtf_dtls mm-table']"; 
+  public static String WatchListLink = "//div[@class='menutable']//a[@href='https://m.moneycontrol.com/watchlist.php']";
+}
